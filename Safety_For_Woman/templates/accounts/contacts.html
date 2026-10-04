@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Emergency Contacts - SafeHer{% endblock %}
+
+{% block content %}
+<div class="grid-2">
+  <!-- Registered Contacts List -->
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+      <h2 class="card-title" style="margin:0;">Emergency Next of Kin</h2>
+      <span class="badge badge-success">{{ contacts|length }} Active</span>
+    </div>
+    <p class="card-subtitle">
+      These trusted people receive your live GPS link and automated call/SMS on panic activation.
+    </p>
+
+    {% if contacts %}
+      <div style="display:flex; flex-direction:column; gap:0.75rem;">
+        {% for contact in contacts %}
+          <div style="padding:1rem; border:1px solid #e2e8f0; border-radius:0.5rem; background:#ffffff; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
+                <strong>{{ contact.name }}</strong>
+                {% if contact.priority == 1 %}
+                  <span class="badge badge-danger">Primary (Call + SMS)</span>
+                {% else %}
+                  <span class="badge badge-warning">Priority {{ contact.priority }} (SMS)</span>
+                {% endif %}
+              </div>
+              <div style="color:#64748b; font-size:0.85rem;">
+                {{ contact.relationship|default:"Next of Kin" }} &bull; 📞 {{ contact.phone_number }}
+              </div>
+            </div>
+
+            <form method="POST" action="{% url 'accounts:contact_delete' contact.id %}" onsubmit="return confirm('Remove {{ contact.name }} from emergency alerts?');">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline" style="color:#dc2626; border-color:#fecdd3; padding:0.3rem 0.6rem; font-size:0.8rem;">
+                Remove
+              </button>
+            </form>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="background:#fffbeb; border:1px solid #fef3c7; border-radius:0.5rem; padding:1.25rem; text-align:center;">
+        <div style="font-size:2rem; margin-bottom:0.5rem;">⚠️</div>
+        <h4 style="color:#92400e; margin-bottom:0.25rem;">No Emergency Contacts Added</h4>
+        <p style="color:#b45309; font-size:0.85rem;">
+          In an emergency, your location is shared with these numbers. Please add at least one next of kin.
+        </p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Add New Contact Form -->
+  <div class="card">
+    <h3 class="card-title">Add Trusted Contact</h3>
+    <p class="card-subtitle">Immediate alert will be routed to this person during an incident.</p>
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        {{ form.name }}
+        {{ form.name.errors }}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Relationship</label>
+        {{ form.relationship }}
+        {{ form.relationship.errors }}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Mobile Phone Number (with Country Code)</label>
+        {{ form.phone_number }}
+        <small style="color:#64748b;">e.g. +27 82 123 4567</small>
+        {{ form.phone_number.errors }}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Alert Priority</label>
+        {{ form.priority }}
+        <small style="color:#64748b;">Primary contacts receive high-priority emergency calls.</small>
+        {{ form.priority.errors }}
+      </div>
+
+      <div class="form-group" style="display:flex; align-items:center; gap:0.5rem;">
+        {{ form.notify_on_panic }}
+        <label style="font-size:0.9rem; font-weight:600;">Notify on any SOS activation</label>
+      </div>
+
+      <div class="form-group" style="display:flex; align-items:center; gap:0.5rem;">
+        {{ form.notify_on_standdown_expire }}
+        <label style="font-size:0.9rem; font-weight:600;">Notify if 60-second stand-down window expires</label>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width:100%; padding:0.75rem; font-size:0.95rem;">
+        Save Emergency Contact
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

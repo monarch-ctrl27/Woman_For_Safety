@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Live Safety Map &amp; Safe Rerouting - SafeHer{% endblock %}
+
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1rem;">
+  <div>
+    <h1 style="font-size:1.75rem; font-weight:800; color:var(--dark); margin:0;">
+      Shared Live Safety Map
+    </h1>
+    <p style="color:#64748b; font-size:0.9rem; margin:0;">
+      Crowd-sourced crime knowledge + automated detours avoiding danger circles.
+    </p>
+  </div>
+
+  <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+    <button type="button" onclick="SafeHer.checkGeofence()" class="btn btn-outline" style="font-size:0.85rem;">
+      🔄 Refresh Geofence
+    </button>
+    <a href="{% url 'hotspots:report' %}" class="btn btn-primary" style="font-size:0.85rem;">
+      ➕ Pin New Danger Spot
+    </a>
+  </div>
+</div>
+
+<!-- Map Click Pin Helper Banner -->
+<div id="report-pin-banner" style="display:none; background:#eff6ff; border:1px solid #bfdbfe; padding:0.75rem 1rem; border-radius:0.5rem; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center;">
+  <div>
+    <strong>Selected Pin:</strong> Lat: <span id="pin-lat-display"></span>, Lon: <span id="pin-lon-display"></span>
+  </div>
+  <a id="pin-report-link" href="#" class="btn btn-primary" style="font-size:0.8rem; padding:0.35rem 0.75rem;">
+    Report Danger at this Spot
+  </a>
+</div>
+
+<!-- Safe Routing Active Banner -->
+<div id="safe-route-status" class="route-panel" style="display:none; border-left:5px solid var(--success); margin-bottom:1rem;">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+    <div>
+      <span class="badge badge-success">Automated Safe Detour Active</span>
+      <h4 style="margin:4px 0 2px; color:var(--dark);">Route to: <span id="route-dest-name">Destination</span></h4>
+      <p style="font-size:0.85rem; color:#059669; margin:0; font-weight:600;">
+        🛡️ <span id="route-detour-count"></span>. Green path detours safely around danger radii.
+      </p>
+    </div>
+    <div style="display:flex; align-items:center; gap:0.75rem; font-size:0.8rem;">
+      <span style="color:#dc2626; font-weight:600;">- - - Red dashed: Danger line</span>
+      <span style="color:#059669; font-weight:600;">── Green solid: Safe detour</span>
+    </div>
+  </div>
+</div>
+
+<!-- Quick 1-Tap Safe Reroute Shortcuts -->
+<div class="card" style="padding:0.85rem 1.25rem; margin-bottom:1rem;">
+  <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.75rem;">
+    <div style="font-size:0.9rem; font-weight:700; color:var(--dark);">
+      ⚡ Quick Safe Sanctuary Routing:
+    </div>
+    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+      <button type="button" id="btn-route-nearest-police" class="btn btn-police" style="font-size:0.8rem; padding:0.35rem 0.75rem;">
+        🛡️ Nearest Police Station
+      </button>
+      <button type="button" id="btn-route-nearest-hospital" class="btn btn-success" style="font-size:0.8rem; padding:0.35rem 0.75rem;">
+        🏥 Nearest Trauma Unit
+      </button>
+      <button type="button" id="btn-route-nearest-shelter" class="btn btn-outline" style="font-size:0.8rem; padding:0.35rem 0.75rem; background:#ede9fe; color:#5b21b6; border-color:#ddd6fe;">
+        🏡 Nearest Safe Shelter
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Bloemfontein Safety Corridors Filter Bar -->
+<div class="card" style="padding:0.75rem 1.25rem; margin-bottom:1rem; background:#f8fafc;">
+  <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+    <div style="font-size:0.85rem; font-weight:700; color:var(--dark); display:flex; align-items:center; gap:0.4rem;">
+      <span>📍 Focus Corridor:</span>
+    </div>
+    <div id="corridor-filter-buttons" style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+      <button type="button" class="btn btn-police corridor-btn active" onclick="setCorridorFilter('ALL', this)" style="font-size:0.75rem; padding:0.3rem 0.65rem;">
+        All Metro
+      </button>
+      <button type="button" class="btn btn-outline corridor-btn" onclick="setCorridorFilter('WESTDENE', this)" style="font-size:0.75rem; padding:0.3rem 0.65rem;">
+        Westdene
+      </button>
+      <button type="button" class="btn btn-outline corridor-btn" onclick="setCorridorFilter('WILLOWS', this)" style="font-size:0.75rem; padding:0.3rem 0.65rem;">
+        Willows / CUT
+      </button>
+      <button type="button" class="btn btn-outline corridor-btn" onclick="setCorridorFilter('UNIVERSITAS', this)" style="font-size:0.75rem; padding:0.3rem 0.65rem;">
+        Universitas / UFS
+      </button>
+      <button type="button" class="btn btn-outline corridor-btn" onclick="setCorridorFilter('BRANDWAG', this)" style="font-size:0.75rem; padding:0.3rem 0.65rem;">
+        Brandwag
+      </button>
+      <button type="button" class="btn btn-outline corridor-btn" onclick="setCorridorFilter('CBD', this)" style="font-size:0.75rem; padding:0.3rem 0.65rem;">
+        CBD / Station
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Interactive Map Container -->
+<div id="safemap"></div>
+
+<!-- Map Legend and Guidance -->
+<div class="card" style="margin-top:1rem; padding:1rem 1.25rem;">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+    <div style="display:flex; gap:1.25rem; flex-wrap:wrap; font-size:0.85rem;">
+      <span><span style="display:inline-block; width:12px; height:12px; background:#e11d48; border-radius:50%; margin-right:4px;"></span> Danger Hotspots (with radius)</span>
+      <span><span style="display:inline-block; width:12px; height:12px; background:#2563eb; border-radius:50%; margin-right:4px;"></span> Live GPS Position</span>
+      <span>🛡️ Police Station (SAPS)</span>
+      <span>🏥 24h Trauma Hospital</span>
+      <span>🏡 Women's Safe Shelter</span>
+    </div>
+    <div style="font-size:0.8rem; color:#64748b;">
+      Tip: Tap anywhere on the map to pin a new danger area.
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/safemap.js' %}"></script>
+<script>
+function setCorridorFilter(code, btn) {
+  document.querySelectorAll('.corridor-btn').forEach(b => {
+    b.classList.remove('active', 'btn-police');
+    b.classList.add('btn-outline');
+  });
+  if (btn) {
+    btn.classList.add('active', 'btn-police');
+    btn.classList.remove('btn-outline');
+  }
+  SafeMap.filterCorridor(code);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  SafeMap.init("safemap");
+});
+</script>
+{% endblock %}

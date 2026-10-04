@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Emergency Stand-Down Alert - SafeHer{% endblock %}
+
+{% block content %}
+<div class="standdown-container">
+  {% if alert.status == "STAND_DOWN_PENDING" %}
+    <div class="card" style="border-top:6px solid var(--primary); padding:2rem 1.5rem;">
+      <span class="badge badge-danger" style="font-size:0.85rem; padding:0.35rem 0.75rem;">
+        ⚠️ Stand-Down Window Active
+      </span>
+      
+      <h1 style="font-size:1.8rem; font-weight:900; color:var(--dark); margin:0.75rem 0 0.25rem;">
+        Emergency Verification
+      </h1>
+      <p style="color:#64748b; font-size:0.95rem;">
+        Triggered by: <strong>{{ alert.get_trigger_source_display }}</strong>
+      </p>
+
+      {% if alert.hotspot_approached %}
+        <div style="background:#fff1f2; border:1px solid #fecdd3; border-radius:0.5rem; padding:0.6rem; margin:0.75rem auto; font-size:0.85rem; color:#be123c;">
+          ⚠️ Approached flagged danger hotspot: <strong>{{ alert.hotspot_approached.title }}</strong>
+        </div>
+      {% endif %}
+
+      <!-- Countdown Circle -->
+      <div class="countdown-circle">
+        <div id="countdown-display" class="countdown-number">{{ seconds_remaining }}</div>
+        <div class="countdown-label">Seconds to Escalate</div>
+      </div>
+
+      <p style="font-size:0.85rem; color:#64748b; margin-bottom:1.5rem;">
+        If you do not confirm safety before the timer reaches 0, live coordinates and distress alerts will be dispatched automatically.
+      </p>
+
+      <!-- Stand-Down Cancellation Form -->
+      <form method="POST" action="{% url 'emergency:cancel' alert.id %}" style="margin-bottom:1rem;">
+        {% csrf_token %}
+        <div style="max-width:280px; margin:0 auto 1rem;">
+          <input type="password" name="pin" id="cancel-pin" class="form-control text-center" maxlength="6" placeholder="Enter Safe PIN (Demo: 2468)" style="font-size:1.25rem; letter-spacing:4px; font-weight:700;">
+        </div>
+        
+        <button type="submit" class="btn btn-success" style="width:100%; max-width:320px; padding:0.85rem; font-size:1.05rem; font-weight:800; background:#059669;">
+          🛡️ I AM SAFE (STAND DOWN ALERT)
+        </button>
+      </form>
+
+      <!-- Immediate Escalation Override -->
+      <form method="POST" action="{% url 'emergency:escalate' alert.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger" style="width:100%; max-width:320px; padding:0.6rem; font-size:0.9rem; font-weight:700;">
+          ⚡ Escalate Immediately (Send Help Now)
+        </button>
+      </form>
+    </div>
+
+  {% elif alert.status == "ACTIVE" %}
+    <!-- Alert Escalated View -->
+    <div class="card" style="border-top:6px solid #b91c1c; padding:2rem 1.5rem;">
+      <div style="font-size:3rem; margin-bottom:0.5rem;">🚨</div>
+      <span class="badge badge-danger" style="font-size:0.9rem; padding:0.4rem 0.85rem;">
+        SOS DISPATCHED &bull; HELP ALERTED
+      </span>
+
+      <h1 style="font-size:1.8rem; font-weight:900; color:#b91c1c; margin:0.75rem 0 0.25rem;">
+        Emergency Response In Progress
+      </h1>
+      <p style="color:#475569; font-size:0.95rem; margin-bottom:1.25rem;">
+        Your live coordinates have been transmitted to your registered Next-of-Kin contacts with WhatsApp backup. If emergency assistance is needed, call SAPS directly below.
+      </p>
+
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:0.5rem; padding:1rem; text-align:left; margin-bottom:1.5rem;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+          <span style="color:#64748b; font-size:0.85rem;">Incident ID:</span>
+          <strong>#{{ alert.id }}</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+          <span style="color:#64748b; font-size:0.85rem;">Trigger Source:</span>
+          <strong>{{ alert.get_trigger_source_display }}</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+          <span style="color:#64748b; font-size:0.85rem;">Live GPS Coords:</span>
+          <a href="{{ alert.google_maps_url }}" target="_blank" style="color:var(--police-blue); font-weight:600;">
+            {{ alert.latitude|floatformat:4 }}, {{ alert.longitude|floatformat:4 }} ↗
+          </a>
+        </div>
+        {% if alert.battery_level %}
+          <div style="display:flex; justify-content:space-between;">
+            <span style="color:#64748b; font-size:0.85rem;">Device Battery:</span>
+            <strong>{{ alert.battery_level }}%</strong>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Quick Police Helpline Call -->
+      <a href="tel:10111" class="btn btn-police" style="width:100%; max-width:320px; padding:0.8rem; font-size:1rem; font-weight:700; margin-bottom:1rem;">
+        📞 Call Police Directly (10111)
+      </a>
+
+      <!-- Resolve / Disarm Form -->
+      <form method="POST" action="{% url 'emergency:cancel' alert.id %}" style="margin-top:0.5rem;">
+        {% csrf_token %}
+        <div style="max-width:260px; margin:0 auto 0.75rem;">
+          <input type="password" name="pin" class="form-control text-center" placeholder="Enter Safe PIN to Resolve">
+        </div>
+        <button type="submit" class="btn btn-outline" style="font-size:0.85rem; padding:0.4rem 0.8rem;">
+          Resolve Incident (I Am Now Safe)
+        </button>
+      </form>
+    </div>
+
+  {% elif alert.status == "FALSE_ALARM" or alert.status == "RESOLVED" %}
+    <div class="card" style="border-top:6px solid var(--success); padding:2rem 1.5rem;">
+      <div style="font-size:3rem; margin-bottom:0.5rem;">✅</div>
+      <h2 style="font-size:1.6rem; font-weight:800; color:#065f46; margin-bottom:0.5rem;">
+        Alert Stood Down Safely
+      </h2>
+      <p style="color:#64748b; font-size:0.95rem; margin-bottom:1.5rem;">
+        Incident #{{ alert.id }} has been marked safe and cancelled as a false alarm. No further escalations will occur.
+      </p>
+      <a href="{% url 'core:dashboard' %}" class="btn btn-primary" style="padding:0.6rem 1.5rem;">
+        Back to Dashboard
+      </a>
+    </div>
+  {% endif %}
+
+  <!-- Dispatched Notification Log Table -->
+  <div class="card" style="margin-top:1.5rem; text-align:left;">
+    <h3 class="card-title" style="font-size:1.1rem; margin-bottom:0.75rem;">
+      Dispatched Emergency Notification Audit
+    </h3>
+    
+    {% if notifications %}
+      <div style="display:flex; flex-direction:column; gap:0.6rem;">
+        {% for n in notifications %}
+          <div style="padding:0.75rem; border:1px solid #e2e8f0; border-radius:0.5rem; background:#ffffff;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.3rem;">
+              <strong>{{ n.recipient_name }}</strong>
+              <span class="badge {% if n.status == 'SENT' %}badge-success{% elif n.status == 'SIMULATED_DEMO' %}badge-warning{% else %}badge-danger{% endif %}">
+                {{ n.get_status_display }}
+              </span>
+            </div>
+            <p style="font-size:0.8rem; color:#475569; font-family:monospace; margin-bottom:0.3rem; white-space:pre-wrap;">{{ n.message_body }}</p>
+            <div style="font-size:0.75rem; color:#94a3b8;">
+              Via {{ n.get_channel_display }} &bull; {{ n.sent_at|time:"H:i:s" }}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p style="color:#64748b; font-size:0.85rem; margin:0;">
+        Standing down... If countdown expires, SMS dispatches will log here automatically.
+      </p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let remainingSeconds = parseInt("{{ seconds_remaining|default:0 }}");
+const countdownEl = document.getElementById("countdown-display");
+const alertId = "{{ alert.id }}";
+const alertStatus = "{{ alert.status }}";
+
+if (alertStatus === "STAND_DOWN_PENDING") {
+  // Pulse phone vibration
+  if ("vibrate" in navigator) {
+    navigator.vibrate([400, 200, 400, 200, 400]);
+  }
+
+  const timer = setInterval(async () => {
+    if (remainingSeconds > 0) {
+      remainingSeconds -= 1;
+      if (countdownEl) {
+        countdownEl.innerText = remainingSeconds;
+      }
+    }
+
+    // Sync status with server
+    try {
+      const res = await fetch(`/emergency/api/status/${alertId}/`);
+      const data = await res.json();
+
+      if (data.status !== "STAND_DOWN_PENDING") {
+        clearInterval(timer);
+        window.location.reload();
+      }
+    } catch (e) {}
+
+    if (remainingSeconds <= 0) {
+      clearInterval(timer);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    }
+  }, 1000);
+}
+</script>
+{% endblock %}

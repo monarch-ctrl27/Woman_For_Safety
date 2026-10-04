@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Safe Sanctuaries &amp; Sanctuaries Directory - SafeHer{% endblock %}
+
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+  <div>
+    <h1 style="font-size:1.85rem; font-weight:800; color:var(--dark);">
+      Safe Havens &amp; Sanctuaries
+    </h1>
+    <p style="color:#64748b; font-size:0.95rem;">
+      "Know where to go, not just what to avoid." 24-hour guarded police stations, emergency trauma casualty wards, and accredited women's shelters.
+    </p>
+  </div>
+
+  <a href="{% url 'hotspots:map' %}" class="btn btn-police">
+    🗺️ View on Map
+  </a>
+</div>
+
+<!-- Type Filter Tabs -->
+<div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem;">
+  <a href="{% url 'facilities:list' %}" class="btn {% if not selected_type %}btn-primary{% else %}btn-outline{% endif %}" style="font-size:0.85rem; padding:0.4rem 0.85rem;">
+    All Safe Havens
+  </a>
+  <a href="{% url 'facilities:list' %}?type=POLICE" class="btn {% if selected_type == 'POLICE' %}btn-police{% else %}btn-outline{% endif %}" style="font-size:0.85rem; padding:0.4rem 0.85rem;">
+    🛡️ Police (SAPS)
+  </a>
+  <a href="{% url 'facilities:list' %}?type=HOSPITAL" class="btn {% if selected_type == 'HOSPITAL' %}btn-success{% else %}btn-outline{% endif %}" style="font-size:0.85rem; padding:0.4rem 0.85rem;">
+    🏥 Trauma Hospitals
+  </a>
+  <a href="{% url 'facilities:list' %}?type=CLINIC" class="btn {% if selected_type == 'CLINIC' %}btn-success{% else %}btn-outline{% endif %}" style="font-size:0.85rem; padding:0.4rem 0.85rem;">
+    ⚕️ 24h Clinics
+  </a>
+  <a href="{% url 'facilities:list' %}?type=SHELTER" class="btn {% if selected_type == 'SHELTER' %}btn-primary{% else %}btn-outline{% endif %}" style="font-size:0.85rem; padding:0.4rem 0.85rem;">
+    🏡 Women's Safe Shelters
+  </a>
+</div>
+
+<!-- Facilities Grid -->
+<div class="grid-2">
+  {% for fac in facilities %}
+    <div class="card" style="margin-bottom:0;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.5rem;">
+        <div>
+          {% if fac.facility_type == 'POLICE' %}
+            <span class="badge badge-police">Police (SAPS)</span>
+          {% elif fac.facility_type == 'HOSPITAL' %}
+            <span class="badge badge-hospital">Trauma Center</span>
+          {% elif fac.facility_type == 'CLINIC' %}
+            <span class="badge badge-hospital">Healthcare Clinic</span>
+          {% elif fac.facility_type == 'SHELTER' %}
+            <span class="badge badge-shelter">Women's Shelter</span>
+          {% endif %}
+
+          {% if fac.is_24_hours %}
+            <span class="badge badge-success" style="margin-left:4px;">24 Hours</span>
+          {% endif %}
+        </div>
+
+        {% if fac.has_victim_support_room %}
+          <span style="font-size:0.75rem; background:#f1f5f9; color:#475569; padding:0.2rem 0.5rem; border-radius:0.25rem; font-weight:600;">
+            Victim Support Unit
+          </span>
+        {% endif %}
+      </div>
+
+      <h3 style="font-size:1.2rem; color:var(--dark); margin:0.5rem 0 0.25rem;">{{ fac.name }}</h3>
+      <p style="color:#64748b; font-size:0.85rem; margin-bottom:0.75rem;">📍 {{ fac.address }}</p>
+
+      {% if fac.services_notes %}
+        <p style="font-size:0.85rem; color:#334155; margin-bottom:1rem; background:#f8fafc; padding:0.6rem; border-radius:0.4rem;">
+          {{ fac.services_notes }}
+        </p>
+      {% endif %}
+
+      <div style="display:flex; gap:0.5rem; margin-top:auto; padding-top:0.5rem; border-top:1px solid #f1f5f9;">
+        <a href="tel:{{ fac.phone_number }}" class="btn btn-police" style="flex:1; font-size:0.85rem; padding:0.5rem;">
+          📞 Call ({{ fac.phone_number }})
+        </a>
+        <a href="{% url 'hotspots:map' %}" class="btn btn-success" style="flex:1; font-size:0.85rem; padding:0.5rem;">
+          🧭 Route on Map
+        </a>
+      </div>
+    </div>
+  {% empty %}
+    <p style="color:#64748b;">No facilities match the chosen filter.</p>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,440 @@
+/* SafeHer Safety System Core Stylesheet */
+:root {
+  --primary: #e11d48;
+  --primary-hover: #be123c;
+  --primary-light: #ffe4e6;
+  --police-blue: #1d4ed8;
+  --police-light: #dbeafe;
+  --hospital-green: #059669;
+  --hospital-light: #d1fae5;
+  --shelter-purple: #7c3aed;
+  --shelter-light: #ede9fe;
+  --dark: #0f172a;
+  --surface: #ffffff;
+  --surface-alt: #f8fafc;
+  --border: #e2e8f0;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --warning: #f59e0b;
+  --danger: #dc2626;
+  --success: #10b981;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--text);
+  background-color: #f1f5f9;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header & Nav */
+.safe-header {
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 1.35rem;
+  color: var(--primary);
+}
+
+.brand-badge {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  list-style: none;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+.nav-link:hover, .nav-link.active {
+  background: var(--surface-alt);
+  color: var(--primary);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #ffffff;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.btn-outline:hover {
+  background: var(--surface-alt);
+}
+
+.btn-success {
+  background: var(--success);
+  color: #ffffff;
+}
+
+.btn-police {
+  background: var(--police-blue);
+  color: #ffffff;
+}
+
+/* Active Alert Banner */
+.emergency-banner {
+  background: #be123c;
+  color: #ffffff;
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  animation: pulse-siren 2s infinite ease-in-out;
+}
+
+@keyframes pulse-siren {
+  0%, 100% { background-color: #be123c; }
+  50% { background-color: #e11d48; }
+}
+
+/* Layout container */
+.container {
+  max-width: 1200px;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+}
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--dark);
+}
+
+.card-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+/* Grid */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+/* Panic SOS Central Button */
+.sos-button-wrapper {
+  text-align: center;
+  padding: 1.5rem 0;
+}
+
+.sos-big-btn {
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #f43f5e 0%, #be123c 100%);
+  color: #ffffff;
+  border: 6px solid #ffe4e6;
+  box-shadow: 0 0 0 10px rgba(225, 29, 72, 0.2), 0 10px 25px rgba(190, 18, 60, 0.4);
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.sos-big-btn:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 0 14px rgba(225, 29, 72, 0.25), 0 15px 30px rgba(190, 18, 60, 0.5);
+}
+
+.sos-big-btn:active {
+  transform: scale(0.97);
+}
+
+.sos-subtext {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  opacity: 0.9;
+  text-transform: uppercase;
+}
+
+/* Hands-free indicator cards */
+.sensor-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.sensor-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sensor-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.sensor-active-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--success);
+  display: inline-block;
+  animation: pulse-dot 1.5s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.2); }
+}
+
+/* Stand Down Countdown UI */
+.standdown-container {
+  max-width: 550px;
+  margin: 2rem auto;
+  text-align: center;
+}
+
+.countdown-circle {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 8px solid var(--primary);
+  margin: 1.5rem auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  box-shadow: 0 0 25px rgba(225, 29, 72, 0.25);
+  animation: pulse-countdown 1s infinite alternate;
+}
+
+@keyframes pulse-countdown {
+  from { border-color: var(--primary); }
+  to { border-color: var(--warning); }
+}
+
+.countdown-number {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.countdown-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: 1.15rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  color: var(--dark);
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.95rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: #ffffff;
+  transition: border-color 0.15s;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+/* Flash Messages */
+.alert {
+  padding: 0.85rem 1.25rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.alert-success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+.alert-error, .alert-danger { background: #ffe4e6; color: #9f1239; border: 1px solid #fecdd3; }
+.alert-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+.alert-info { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+
+/* Map Canvas Container */
+#safemap {
+  height: 600px;
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  z-index: 1;
+}
+
+/* Safe Route Stats Box */
+.route-panel {
+  background: #ffffff;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+/* Badge styles */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 0.25rem;
+  text-transform: uppercase;
+}
+.badge-danger { background: #fee2e2; color: #991b1b; }
+.badge-warning { background: #fef3c7; color: #92400e; }
+.badge-success { background: #d1fae5; color: #065f46; }
+.badge-police { background: #dbeafe; color: #1e40af; }
+.badge-hospital { background: #dcfce7; color: #166534; }
+.badge-shelter { background: #ede9fe; color: #5b21b6; }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .nav-links {
+    gap: 0.35rem;
+  }
+  .nav-link {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.5rem;
+  }
+  #safemap {
+    height: 450px;
+  }
+  .sos-big-btn {
+    width: 150px;
+    height: 150px;
+    font-size: 1.75rem;
+  }
+}

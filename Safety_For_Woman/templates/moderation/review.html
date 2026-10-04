@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}Review Hotspot — SafeHer Moderation{% endblock %}
+
+{% block content %}
+<div style="margin-bottom:1.5rem;">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+    <div>
+      <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
+        <a href="{% url 'moderation:dashboard' %}" style="color:var(--police-blue); font-size:0.85rem; text-decoration:none; font-weight:600;">
+          &larr; Back to Moderation Queue
+        </a>
+        <span style="color:#94a3b8;">/</span>
+        <span class="badge badge-police">Audit ID #{{ hotspot.id }}</span>
+      </div>
+      <h1 style="font-size:1.85rem; font-weight:800; color:var(--dark); margin:0;">
+        Review Hotspot — SafeHer Moderation
+      </h1>
+      <p style="color:#64748b; font-size:0.95rem; margin:0.25rem 0 0;">
+        Community safety moderator review &amp; danger zone radius calibration.
+      </p>
+    </div>
+
+    <div style="display:flex; gap:0.5rem;">
+      <a href="{% url 'moderation:log' %}" class="btn btn-outline" style="font-size:0.85rem;">
+        📋 Full Audit Log
+      </a>
+      <a href="{% url 'hotspots:map' %}" class="btn btn-police" style="font-size:0.85rem;">
+        🗺️ View on Live Map
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Prominent Flag Reason Alert if Flagged -->
+{% if hotspot.verification_status == 'flagged' or hotspot.flag_reason %}
+  <div style="background:#fef3c7; border:1px solid #fde68a; border-left:6px solid #f59e0b; padding:1.25rem; border-radius:0.5rem; margin-bottom:1.5rem; color:#92400e;">
+    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.35rem;">
+      <span style="font-size:1.3rem;">⚠️</span>
+      <h3 style="font-size:1.1rem; font-weight:700; margin:0; color:#92400e;">Community Flag Reason</h3>
+    </div>
+    <p style="font-size:0.95rem; margin:0; line-height:1.5;">
+      {{ hotspot.flag_reason|default:"This hotspot was flagged by community members or automated heuristics as requiring verification." }}
+    </p>
+  </div>
+{% endif %}
+
+<div class="grid-2" style="gap:1.5rem; align-items:start;">
+  <!-- Left Column: Full Hotspot Details & Map Preview -->
+  <div>
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
+        <span class="badge badge-police">{{ hotspot.get_corridor_display|default:hotspot.corridor }}</span>
+        <div style="display:flex; gap:0.4rem;">
+          <span class="badge {% if hotspot.severity == 'CRITICAL' or hotspot.severity == 'HIGH' %}badge-danger{% else %}badge-warning{% endif %}">
+            {{ hotspot.get_severity_display|default:hotspot.severity }}
+          </span>
+          <span class="badge {% if hotspot.verification_status == 'flagged' %}badge-danger{% elif hotspot.verification_status == 'published' %}badge-success{% else %}badge-warning{% endif %}">
+            {{ hotspot.get_verification_status_display|default:hotspot.verification_status|title }}
+          </span>
+        </div>
+      </div>
+
+      <h2 style="font-size:1.45rem; font-weight:800; color:var(--dark); margin:0 0 0.5rem;">
+        {{ hotspot.title }}
+      </h2>
+
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:0.5rem; padding:1rem; margin-bottom:1.25rem;">
+        <h4 style="font-size:0.85rem; text-transform:uppercase; color:#64748b; margin-bottom:0.35rem; font-weight:700;">
+          Full Hazard Description &amp; Incident Context
+        </h4>
+        <p style="font-size:0.95rem; color:#334155; line-height:1.6; margin:0; white-space:pre-wrap;">
+          {{ hotspot.description }}
+        </p>
+      </div>
+
+      <!-- Attributes Grid -->
+      <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:0.85rem; font-size:0.85rem; margin-bottom:1.25rem;">
+        <div style="padding:0.6rem; background:#f8fafc; border-radius:0.4rem; border:1px solid #f1f5f9;">
+          <span style="color:#64748b; display:block;">Category:</span>
+          <strong>🏷️ {{ hotspot.get_category_display|default:hotspot.category }}</strong>
+        </div>
+        <div style="padding:0.6rem; background:#f8fafc; border-radius:0.4rem; border:1px solid #f1f5f9;">
+          <span style="color:#64748b; display:block;">Risk Time:</span>
+          <strong>⏰ {{ hotspot.get_risk_time_display|default:hotspot.risk_time }}</strong>
+        </div>
+        <div style="padding:0.6rem; background:#f8fafc; border-radius:0.4rem; border:1px solid #f1f5f9;">
+          <span style="color:#64748b; display:block;">Danger Radius:</span>
+          <strong>⭕ {{ hotspot.danger_radius_meters }} meters</strong>
+        </div>
+        <div style="padding:0.6rem; background:#f8fafc; border-radius:0.4rem; border:1px solid #f1f5f9;">
+          <span style="color:#64748b; display:block;">Confirmations:</span>
+          <strong>👥 {{ hotspot.confirmations_count }} women confirmed</strong>
+        </div>
+        <div style="padding:0.6rem; background:#f8fafc; border-radius:0.4rem; border:1px solid #f1f5f9;">
+          <span style="color:#64748b; display:block;">Reported By:</span>
+          <strong>👤 {% if hotspot.is_anonymous %}Anonymous Reporter{% else %}{{ hotspot.reported_by.username|default:"Anonymous" }}{% endif %}</strong>
+        </div>
+        <div style="padding:0.6rem; background:#f8fafc; border-radius:0.4rem; border:1px solid #f1f5f9;">
+          <span style="color:#64748b; display:block;">Date Reported:</span>
+          <strong>🕒 {{ hotspot.created_at|date:"Y-m-d H:i:s" }}</strong>
+        </div>
+      </div>
+
+      <!-- Coordinates & Map Preview -->
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <span style="font-size:0.85rem; font-weight:700; color:var(--dark);">
+            📍 Geographic Position &amp; Danger Radius Buffer
+          </span>
+          <span style="font-family:monospace; font-size:0.8rem; color:#64748b;">
+            {{ hotspot.latitude|floatformat:5 }}, {{ hotspot.longitude|floatformat:5 }}
+          </span>
+        </div>
+        <div id="hotspot-detail-map" style="height:260px; width:100%; border-radius:0.5rem; border:1px solid #e2e8f0;"></div>
+        <small style="color:#64748b; font-size:0.75rem; display:block; margin-top:0.35rem;">
+          Map tiles powered by CartoDB Voyager. Red circle indicates automated rerouting geofence buffer.
+        </small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Column: Moderation Action Form & Audit Trail -->
+  <div>
+    <!-- Action Form -->
+    <div class="card" style="border-top:5px solid var(--primary); margin-bottom:1.5rem;">
+      <h3 class="card-title" style="margin-bottom:0.25rem;">Moderation Action</h3>
+      <p class="card-subtitle" style="margin-bottom:1.25rem;">
+        Take official action on this pin. Every decision is written to the immutable audit log.
+      </p>
+
+      <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label class="form-label" for="action-select">Decision Action <span style="color:var(--danger);">*</span></label>
+          <select name="action" id="action-select" class="form-control" required onchange="handleActionChange(this.value)">
+            <option value="kept" {% if hotspot.verification_status == 'published' %}selected{% endif %}>
+              ✅ Kept / Approved (Genuine Hazard on Live Map)
+            </option>
+            <option value="removed" {% if hotspot.verification_status == 'removed' %}selected{% endif %}>
+              🚫 Removed (Invalid / Defamatory / Off Live Map)
+            </option>
+            <option value="flagged" {% if hotspot.verification_status == 'flagged' %}selected{% endif %}>
+              ⚠️ Flagged (Requires Further Investigation / Disputed)
+            </option>
+            <option value="radius_adjusted">
+              ⭕ Radius Adjusted (Modify Danger Detour Perimeter)
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group" id="radius-adjust-group" style="display:none;">
+          <label class="form-label" for="radius-input">Adjust Danger Radius (Meters)</label>
+          <input type="number" id="radius-input" name="danger_radius_meters" class="form-control" value="{{ hotspot.danger_radius_meters }}" min="50" max="2500" step="25">
+          <small style="color:#64748b;">Sets the detour buffer radius where safe routing and geofence warnings activate.</small>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reason-input">Audit Reason / Justification <span style="color:var(--danger);">*</span></label>
+          <textarea id="reason-input" name="reason" class="form-control" rows="4" required placeholder="Mandatory audit explanation for this moderation decision (SRS §6.1)..."></textarea>
+          <small style="color:#64748b;">Explain why this action was taken. Stored permanently with your username and timestamp.</small>
+        </div>
+
+        <div style="display:flex; gap:0.75rem; margin-top:1.25rem;">
+          <button type="submit" class="btn btn-primary" style="flex:2; padding:0.75rem;">
+            💾 Submit Moderation Decision
+          </button>
+          <a href="{% url 'moderation:dashboard' %}" class="btn btn-outline" style="flex:1; text-align:center;">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Past Moderation Actions Audit Trail for this Hotspot -->
+    <div class="card" style="margin-bottom:0;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+        <h3 class="card-title" style="margin:0;">Past Moderation Actions</h3>
+        <span class="badge badge-police">{{ hotspot.moderation_logs.count }} Records</span>
+      </div>
+      <p class="card-subtitle" style="margin-bottom:1rem;">
+        Historical timeline of decisions made on this specific hazard.
+      </p>
+
+      {% if hotspot.moderation_logs.all %}
+        <div style="display:flex; flex-direction:column; gap:0.75rem;">
+          {% for log in hotspot.moderation_logs.all %}
+            <div style="padding:0.85rem; border:1px solid #e2e8f0; border-radius:0.5rem; background:#ffffff;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem; flex-wrap:wrap; gap:0.35rem;">
+                <div>
+                  <span class="badge {% if log.action == 'kept' %}badge-success{% elif log.action == 'removed' %}badge-danger{% elif log.action == 'flagged' %}badge-warning{% else %}badge-police{% endif %}">
+                    {{ log.get_action_display|default:log.action|title }}
+                  </span>
+                  <strong style="margin-left:0.4rem; font-size:0.85rem;">
+                    {{ log.moderator.username|default:"System" }}
+                  </strong>
+                </div>
+                <span style="font-size:0.75rem; color:#64748b;">{{ log.created_at|date:"Y-m-d H:i" }}</span>
+              </div>
+              <p style="font-size:0.85rem; color:#475569; margin:0; line-height:1.4; background:#f8fafc; padding:0.5rem; border-radius:0.35rem;">
+                {{ log.reason }}
+              </p>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div style="background:#f8fafc; padding:1.5rem; border-radius:0.5rem; text-align:center;">
+          <p style="color:#64748b; font-size:0.85rem; margin:0;">
+            No past moderation actions logged yet for this hotspot.
+          </p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const lat = parseFloat("{{ hotspot.latitude }}");
+  const lon = parseFloat("{{ hotspot.longitude }}");
+  const radius = parseInt("{{ hotspot.danger_radius_meters|default:250 }}");
+
+  if (!isNaN(lat) && !isNaN(lon)) {
+    const detailMap = L.map("hotspot-detail-map").setView([lat, lon], 15);
+
+    // Keyless Humanitarian Safety layer (No API key required)
+    L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      subdomains: "abc",
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/">Humanitarian OpenStreetMap Team</a> | SafeHer Ops'
+    }).addTo(detailMap);
+
+    // Hazard Marker
+    const marker = L.marker([lat, lon]).addTo(detailMap);
+    marker.bindPopup("<strong>{{ hotspot.title|escapejs }}</strong><br>Radius: " + radius + "m").openPopup();
+
+    // Danger radius circle
+    L.circle([lat, lon], {
+      color: "#e11d48",
+      fillColor: "#e11d48",
+      fillOpacity: 0.18,
+      radius: radius
+    }).addTo(detailMap);
+  }
+});
+
+function handleActionChange(val) {
+  const radiusField = document.getElementById("radius-adjust-group");
+  if (val === "radius_adjusted") {
+    radiusField.style.display = "block";
+  } else {
+    radiusField.style.display = "none";
+  }
+}
+</script>
+{% endblock %}

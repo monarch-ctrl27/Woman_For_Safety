@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Moderation Queue — SafeHer Ops{% endblock %}
+
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+  <div>
+    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
+      <span class="badge badge-police">Operations Platform</span>
+      <span class="badge badge-warning">SRS §3.7 &bull; FR-MOD</span>
+    </div>
+    <h1 style="font-size:1.85rem; font-weight:800; color:var(--dark); margin:0;">
+      Moderation Queue — SafeHer Ops
+    </h1>
+    <p style="color:#64748b; font-size:0.95rem; margin:0.25rem 0 0;">
+      Triage, review, and verify crowd-sourced danger pins across metro corridors.
+    </p>
+  </div>
+
+  <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+    <a href="{% url 'moderation:log' %}" class="btn btn-outline" style="font-size:0.85rem;">
+      📋 Moderation Audit Log
+    </a>
+    <a href="{% url 'hotspots:map' %}" class="btn btn-police" style="font-size:0.85rem;">
+      🗺️ View Live Map
+    </a>
+  </div>
+</div>
+
+<!-- Queue Metrics Header -->
+<div class="grid-4" style="margin-bottom:1.5rem;">
+  <div class="card" style="margin-bottom:0; text-align:center; padding:1.25rem 1rem; border-top:4px solid var(--danger);">
+    <div style="font-size:2rem; font-weight:800; color:var(--danger);">
+      {{ flagged_count|default:flagged_hotspot_count|default:0 }}
+    </div>
+    <div style="font-size:0.85rem; font-weight:700; color:#64748b; margin-top:0.25rem;">
+      <span class="badge badge-danger">Flagged (Needs Review)</span>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:0; text-align:center; padding:1.25rem 1rem; border-top:4px solid var(--success);">
+    <div style="font-size:2rem; font-weight:800; color:var(--success);">
+      {{ published_count|default:0 }}
+    </div>
+    <div style="font-size:0.85rem; font-weight:700; color:#64748b; margin-top:0.25rem;">
+      <span class="badge badge-success">Published on Live Map</span>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:0; text-align:center; padding:1.25rem 1rem; border-top:4px solid var(--warning);">
+    <div style="font-size:2rem; font-weight:800; color:var(--warning);">
+      {{ removed_count|default:0 }}
+    </div>
+    <div style="font-size:0.85rem; font-weight:700; color:#64748b; margin-top:0.25rem;">
+      <span class="badge badge-warning">Removed by Moderator</span>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:0; text-align:center; padding:1.25rem 1rem; border-top:4px solid var(--police-blue);">
+    <div style="font-size:2rem; font-weight:800; color:var(--police-blue);">
+      {{ total_count|default:hotspots.count|default:0 }}
+    </div>
+    <div style="font-size:0.85rem; font-weight:700; color:#64748b; margin-top:0.25rem;">
+      <span class="badge badge-police">Total Reports</span>
+    </div>
+  </div>
+</div>
+
+<!-- Notice on Escalation Policy -->
+<div style="background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid var(--police-blue); border-radius:0.5rem; padding:0.75rem 1rem; margin-bottom:1.5rem; font-size:0.85rem; color:#1e40af;">
+  ℹ️ <strong>System Note:</strong> SafeHer is the administrator &amp; moderator web operations console. End-user mobile app runs separately in Flutter. Per SRS v1.2, emergency panic pipeline escalations dispatch to <strong>Next-of-Kin ONLY</strong> with no direct police dispatch.
+</div>
+
+<!-- Corridor Filter Buttons Row -->
+<div class="card" style="padding:1rem 1.25rem; margin-bottom:1.5rem;">
+  <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.75rem;">
+    <div style="font-size:0.9rem; font-weight:700; color:var(--dark);">
+      Filter by Corridor:
+    </div>
+    <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+      <a href="?corridor=" class="btn {% if not request.GET.corridor or request.GET.corridor == 'ALL' %}btn-primary{% else %}btn-outline{% endif %}" style="font-size:0.8rem; padding:0.35rem 0.75rem;">
+        All Corridors
+      </a>
+      <a href="?corridor=WESTDENE" class="btn {% if request.GET.corridor == 'WESTDENE' %}btn-primary{% else %}btn-outline{% endif %}" style="font-size:0.8rem; padding:0.35rem 0.75rem;">
+        Westdene
+      </a>
+      <a href="?corridor=WILLOWS" class="btn {% if request.GET.corridor == 'WILLOWS' %}btn-primary{% else %}btn-outline{% endif %}" style="font-size:0.8rem; padding:0.35rem 0.75rem;">
+        Willows (CUT Belt)
+      </a>
+      <a href="?corridor=UNIVERSITAS" class="btn {% if request.GET.corridor == 'UNIVERSITAS' %}btn-primary{% else %}btn-outline{% endif %}" style="font-size:0.8rem; padding:0.35rem 0.75rem;">
+        Universitas (UFS Fringe)
+      </a>
+      <a href="?corridor=BRANDWAG" class="btn {% if request.GET.corridor == 'BRANDWAG' %}btn-primary{% else %}btn-outline{% endif %}" style="font-size:0.8rem; padding:0.35rem 0.75rem;">
+        Brandwag Retail
+      </a>
+      <a href="?corridor=CBD" class="btn {% if request.GET.corridor == 'CBD' %}btn-primary{% else %}btn-outline{% endif %}" style="font-size:0.8rem; padding:0.35rem 0.75rem;">
+        CBD / Station
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Hotspot Cards Grid -->
+<div class="grid-3">
+  {% for h in hotspots %}
+    <div class="card" style="display:flex; flex-direction:column; justify-content:space-between; margin-bottom:0; border-top:4px solid {% if h.verification_status == 'flagged' %}var(--danger){% elif h.verification_status == 'published' %}var(--success){% else %}var(--warning){% endif %};">
+      <div>
+        <!-- Badges header -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.4rem; margin-bottom:0.6rem; flex-wrap:wrap;">
+          <span class="badge badge-police" style="font-size:0.7rem;">
+            {{ h.get_corridor_display|default:h.corridor }}
+          </span>
+          <div style="display:flex; gap:0.3rem;">
+            <span class="badge {% if h.severity == 'CRITICAL' or h.severity == 'HIGH' %}badge-danger{% else %}badge-warning{% endif %}" style="font-size:0.7rem;">
+              {{ h.get_severity_display|default:h.severity }}
+            </span>
+            <span class="badge {% if h.verification_status == 'flagged' %}badge-danger{% elif h.verification_status == 'published' %}badge-success{% else %}badge-warning{% endif %}" style="font-size:0.7rem;">
+              {{ h.get_verification_status_display|default:h.verification_status|title }}
+            </span>
+          </div>
+        </div>
+
+        <h3 style="font-size:1.05rem; font-weight:700; color:var(--dark); margin:0 0 0.35rem; line-height:1.3;">
+          {{ h.title }}
+        </h3>
+
+        <div style="font-size:0.8rem; color:#64748b; margin-bottom:0.5rem; font-weight:600;">
+          🏷️ {{ h.get_category_display|default:h.category }} &bull; Radius: {{ h.danger_radius_meters }}m
+        </div>
+
+        <!-- Truncated Description -->
+        <p style="font-size:0.85rem; color:#475569; line-height:1.5; margin-bottom:0.75rem;">
+          {{ h.description|truncatechars:100 }}
+        </p>
+
+        <!-- Flag Reason Callout Box -->
+        {% if h.verification_status == 'flagged' %}
+          <div style="background:#fef3c7; border:1px solid #fde68a; border-left:4px solid var(--warning); padding:0.5rem 0.75rem; border-radius:0.35rem; color:#92400e; font-size:0.8rem; margin-bottom:0.75rem;">
+            <strong>⚠️ Community Flag Reason:</strong>
+            <div>{{ h.flag_reason|default:"Flagged by community review — requires moderator verification." }}</div>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Card Footer Meta -->
+      <div style="border-top:1px solid #f1f5f9; padding-top:0.75rem; margin-top:0.75rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:#64748b; margin-bottom:0.75rem;">
+          <span>👥 {{ h.confirmations_count }} confirmations</span>
+          <span>🕒 {{ h.created_at|date:"Y-m-d H:i" }}</span>
+        </div>
+        <div style="font-size:0.75rem; color:#64748b; margin-bottom:0.75rem;">
+          👤 Reporter: <strong>{% if h.is_anonymous %}Anonymous{% else %}{{ h.reported_by.username|default:"Anonymous" }}{% endif %}</strong>
+        </div>
+        <a href="{% url 'moderation:review' h.id %}" class="btn btn-outline" style="width:100%; font-size:0.85rem; padding:0.45rem;">
+          🔍 Review Hotspot
+        </a>
+      </div>
+    </div>
+  {% empty %}
+    <div class="card" style="grid-column: 1 / -1; text-align:center; padding:3rem 1.5rem;">
+      <div style="font-size:2.5rem; margin-bottom:0.5rem;">🛡️</div>
+      <h3 style="color:var(--dark); margin-bottom:0.5rem;">No Hotspots in Queue</h3>
+      <p style="color:#64748b; font-size:0.9rem; max-width:500px; margin:0 auto 1.5rem;">
+        There are currently no danger pins matching this corridor filter. All reports are verified or cleared.
+      </p>
+      <a href="?corridor=" class="btn btn-primary" style="font-size:0.85rem;">
+        Reset Corridor Filter
+      </a>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

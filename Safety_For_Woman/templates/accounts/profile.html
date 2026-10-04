@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Safety Settings - SafeHer{% endblock %}
+
+{% block content %}
+<div style="max-width:650px; margin:1.5rem auto;">
+  <div class="card" style="padding:2rem;">
+    <h2 class="card-title">Safety Preferences &amp; Hardware Sensor Arms</h2>
+    <p class="card-subtitle">Control your zero-unlock triggers and stand-down PIN.</p>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label">Emergency Phone Number</label>
+        {{ form.phone_number }}
+        {{ form.phone_number.errors }}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Secret Safe PIN (Stand-Down Code)</label>
+        {{ form.safe_pin }}
+        <small style="color:#64748b;">4-digit PIN required to cancel a 60-second alert.</small>
+        {{ form.safe_pin.errors }}
+      </div>
+
+      <div style="border-top:1px solid #e2e8f0; padding-top:1rem; margin-top:1.5rem;">
+        <h4 style="margin-bottom:0.75rem; color:#0f172a;">Hands-Free Sensor Toggles</h4>
+
+        <div style="margin-bottom:0.85rem; display:flex; align-items:flex-start; gap:0.75rem;">
+          {{ form.triple_press_enabled }}
+          <div>
+            <label style="font-weight:600; display:block;">Enable Triple-Press Power/Key Trigger</label>
+            <small style="color:#64748b;">3 rapid taps fire emergency response without screen unlock.</small>
+          </div>
+        </div>
+
+        <div style="margin-bottom:0.85rem; display:flex; align-items:flex-start; gap:0.75rem;">
+          {{ form.voice_trigger_enabled }}
+          <div>
+            <label style="font-weight:600; display:block;">Enable Voice Recognition ("Help!" / "Emergency")</label>
+            <small style="color:#64748b;">Browser speech recognition listens continuously for distress keywords.</small>
+          </div>
+        </div>
+
+        <div style="margin-bottom:0.85rem; display:flex; align-items:flex-start; gap:0.75rem;">
+          {{ form.fall_detection_enabled }}
+          <div>
+            <label style="font-weight:600; display:block;">Enable Automatic Fall Detection</label>
+            <small style="color:#64748b;">Accelerometer triggers alert if free-fall and impact are sensed.</small>
+          </div>
+        </div>
+
+        <div style="margin-bottom:0.85rem; display:flex; align-items:flex-start; gap:0.75rem;">
+          {{ form.geofence_vibration_enabled }}
+          <div>
+            <label style="font-weight:600; display:block;">Enable Danger Hotspot Geofence Vibration</label>
+            <small style="color:#64748b;">Phone vibrates upon entering 600m radius of flagged crime hotspots.</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:1.25rem;">
+        <label class="form-label">Medical &amp; Dispatch Notes (Dispatched with SOS)</label>
+        {{ form.medical_notes }}
+        <small style="color:#64748b;">Allergies, chronic conditions, or physical identifiers sent in SMS alert.</small>
+        {{ form.medical_notes.errors }}
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="margin-top:1rem; width:100%; padding:0.75rem;">
+        Save Safety Settings
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>{% block title %}{{ SITE_NAME }}{% endblock %} | Operations Platform</title>
+  
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="{% static 'css/safeher.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- Preview / Demo Mode Watermark Banner (FR-PREV-5) -->
+  {% if DEMO_MODE %}
+  <div style="background:#fef3c7; color:#92400e; padding:0.4rem 1rem; text-align:center; font-size:0.8rem; font-weight:600; border-bottom:2px solid #fbbf24;">
+    ⚠️ PREVIEW MODE — All data shown is seeded mock data for demonstration purposes. Not real incidents.
+  </div>
+  {% endif %}
+
+  <!-- Active Simulation Alert Banner -->
+  {% if active_emergency_alert %}
+  <div class="emergency-banner">
+    <div>
+      🔬 <strong>SIMULATION IN PROGRESS:</strong> 
+      {% if active_emergency_alert.status == "STAND_DOWN_PENDING" %}
+        Stand-down countdown active ({{ active_emergency_alert.seconds_remaining }}s remaining)
+      {% else %}
+        Simulated NOK escalation triggered.
+      {% endif %}
+    </div>
+    <a href="{% url 'emergency:stand_down' active_emergency_alert.id %}" class="btn btn-primary" style="background:#ffffff; color:#be123c; font-size:0.8rem; padding:0.3rem 0.75rem;">
+      View Simulation
+    </a>
+  </div>
+  {% endif %}
+
+  <!-- Header Navigation (Admin / Moderator Platform) -->
+  <header class="safe-header">
+    <div class="nav-container">
+      <a href="{% if user.is_authenticated %}{% url 'core:dashboard' %}{% else %}{% url 'core:home' %}{% endif %}" class="brand-logo">
+        <span>🛡️ SafeHer Ops</span>
+        {% if DEMO_MODE %}<span class="brand-badge">Preview Mode</span>{% endif %}
+      </a>
+
+      <nav>
+        <ul class="nav-links">
+          {% if user.is_authenticated %}
+            <li><a href="{% url 'core:dashboard' %}" class="nav-link">Dashboard</a></li>
+            <li><a href="{% url 'hotspots:map' %}" class="nav-link">Live Map</a></li>
+            <li>
+              <a href="{% url 'moderation:dashboard' %}" class="nav-link">
+                Moderation
+                {% if flagged_hotspot_count %}<span class="brand-badge" style="background:#dc2626; font-size:0.65rem;">{{ flagged_hotspot_count }}</span>{% endif %}
+              </a>
+            </li>
+            <li><a href="{% url 'facilities:list' %}" class="nav-link">Facilities</a></li>
+            <li><a href="{% url 'emergency:simulation' %}" class="nav-link">Simulations</a></li>
+            <li><a href="{% url 'accounts:profile' %}" class="nav-link">Settings</a></li>
+            <li><a href="{% url 'accounts:logout' %}" class="btn btn-outline" style="padding:0.3rem 0.7rem; font-size:0.85rem;">Logout</a></li>
+          {% else %}
+            <li><a href="{% url 'core:home' %}" class="nav-link">Home</a></li>
+            <li><a href="{% url 'hotspots:map' %}" class="nav-link">Safety Map</a></li>
+            <li><a href="{% url 'facilities:list' %}" class="nav-link">Facilities</a></li>
+            <li><a href="{% url 'core:about' %}" class="nav-link">About</a></li>
+            <li><a href="{% url 'accounts:login' %}" class="btn btn-outline" style="padding:0.3rem 0.8rem;">Login</a></li>
+            <li><a href="{% url 'accounts:register' %}" class="btn btn-primary" style="padding:0.3rem 0.8rem;">Sign Up</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Flash Messages -->
+  <main class="container">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer style="background:#ffffff; border-top:1px solid #e2e8f0; padding:1.5rem 1rem; margin-top:3rem; text-align:center; font-size:0.85rem; color:#64748b;">
+    <div style="max-width:1200px; margin:0 auto; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem;">
+      <div>
+        <strong>SafeHer Operations Platform</strong> &mdash; Admin, Moderation & Simulation Hub
+      </div>
+      <div style="display:flex; gap:1.25rem; flex-wrap:wrap;">
+        <span>🇿🇦 SAPS: <strong>10111</strong></span>
+        <span>Ambulance: <strong>10177</strong></span>
+        <span>GBV Helpline: <strong>0800 150 150</strong></span>
+      </div>
+      <div>
+        <a href="{% url 'core:about' %}" style="color:#64748b; text-decoration:none;">About SafeHer</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

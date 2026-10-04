@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}SafeHer Operations Platform — Admin, Moderation &amp; Simulation Hub{% endblock %}
+
+{% block content %}
+<!-- Operations Hub Hero Banner -->
+<div style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color:#ffffff; border-radius:1rem; padding:3.5rem 2rem; margin-bottom:2rem; box-shadow:0 10px 25px rgba(15,23,42,0.25); border:1px solid #334155;">
+  <div style="max-width:850px; margin:0 auto; text-align:center;">
+    <div style="display:inline-flex; align-items:center; gap:0.5rem; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:9999px; padding:0.4rem 0.9rem; margin-bottom:1.25rem;">
+      <span style="font-size:0.9rem;">🛡️</span>
+      <span style="font-size:0.85rem; font-weight:700; color:#cbd5e1; text-transform:uppercase; letter-spacing:0.5px;">
+        Operations &bull; Moderation &bull; Institutional Hub
+      </span>
+    </div>
+
+    <h1 style="font-size:2.6rem; font-weight:900; line-height:1.2; margin:0 0 1rem; color:#ffffff;">
+      SafeHer Operations Platform
+    </h1>
+    <h2 style="font-size:1.35rem; font-weight:600; color:#f43f5e; margin:0 0 1.25rem;">
+      Admin, Moderation &amp; Simulation Hub
+    </h2>
+
+    <p style="font-size:1.05rem; line-height:1.6; color:#cbd5e1; margin-bottom:1.5rem; max-width:760px; margin-left:auto; margin-right:auto;">
+      This web platform is the operational command center serving administrators, community safety moderators, and institutional partners (universities, student residences, and Business Improvement Districts). 
+      The mobile end-user application is built separately in Flutter.
+    </p>
+
+    <!-- SRS v1.2 Clarification Callout -->
+    <div style="background:rgba(225,29,72,0.15); border:1px solid rgba(225,29,72,0.4); border-radius:0.5rem; padding:0.75rem 1.25rem; margin-bottom:2rem; text-align:center; max-width:720px; margin-left:auto; margin-right:auto;">
+      <span style="font-size:0.85rem; color:#fecdd3; line-height:1.5; display:block;">
+        ⚠️ <strong>Per SRS v1.2 (§2.8 &amp; FR-PANIC-1):</strong> Emergency panic escalations dispatch to <strong>Next-of-Kin ONLY</strong>. No direct or automatic police dispatch is claimed or executed. There is no panic button on this operations web console.
+      </span>
+    </div>
+
+    <!-- Login, Register & Map Buttons -->
+    <div style="display:flex; justify-content:center; gap:0.85rem; flex-wrap:wrap;">
+      <a href="{% url 'accounts:login' %}" class="btn btn-primary" style="font-size:1rem; padding:0.75rem 1.75rem; font-weight:700;">
+        🔐 Moderator / Admin Login
+      </a>
+      <a href="{% url 'accounts:register' %}" class="btn btn-outline" style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.3); color:#ffffff; font-size:1rem; padding:0.75rem 1.5rem;">
+        📝 Register Account
+      </a>
+      <a href="{% url 'hotspots:map' %}" class="btn" style="background:#059669; color:#ffffff; font-size:1rem; padding:0.75rem 1.5rem;">
+        🗺️ Public Safety Map
+      </a>
+      <a href="{% url 'core:about' %}" class="btn" style="background:transparent; border:1px solid #64748b; color:#94a3b8; font-size:1rem; padding:0.75rem 1.25rem;">
+        📖 Architecture &amp; Manifesto
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Regional Protection Metrics -->
+<div class="card" style="margin-bottom:2rem; padding:1.75rem 1rem;">
+  <div style="text-align:center; margin-bottom:1.25rem;">
+    <h3 style="font-size:1.25rem; color:var(--dark); margin:0 0 0.25rem;">Current Regional Protection Telemetry</h3>
+    <p style="color:#64748b; font-size:0.85rem; margin:0;">Operational coverage for Bloemfontein &amp; Free State metropolitan student corridors</p>
+  </div>
+
+  <div class="grid-4" style="max-width:1050px; margin:0 auto;">
+    <div style="padding:1rem; text-align:center; border-right:1px solid #e2e8f0;">
+      <div style="font-size:2.2rem; font-weight:800; color:var(--primary);">{{ total_hotspots }}</div>
+      <div style="color:#64748b; font-weight:600; font-size:0.85rem;">Active Danger Zones Pinned</div>
+    </div>
+    <div style="padding:1rem; text-align:center; border-right:1px solid #e2e8f0;">
+      <div style="font-size:2.2rem; font-weight:800; color:var(--police-blue);">{{ total_facilities }}</div>
+      <div style="color:#64748b; font-weight:600; font-size:0.85rem;">Verified Safe Havens</div>
+    </div>
+    <div style="padding:1rem; text-align:center; border-right:1px solid #e2e8f0;">
+      <div style="font-size:2.2rem; font-weight:800; color:var(--warning);">Next-of-Kin</div>
+      <div style="color:#64748b; font-weight:600; font-size:0.85rem;">SRS v1.2 Escalation Target</div>
+    </div>
+    <div style="padding:1rem; text-align:center;">
+      <div style="font-size:2.2rem; font-weight:800; color:var(--success);">Voyager</div>
+      <div style="color:#64748b; font-weight:600; font-size:0.85rem;">CartoDB Tile Layer Engine</div>
+    </div>
+  </div>
+</div>
+
+<!-- 4 Operational Pillars Grid -->
+<div class="grid-2" style="margin-bottom:2.5rem; gap:1.25rem;">
+  <!-- Pillar 1 -->
+  <div class="card" style="border-left:5px solid var(--primary); margin-bottom:0;">
+    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem;">
+      <div style="font-size:1.8rem;">🛡️</div>
+      <h3 class="card-title" style="margin:0;">Community Danger Moderation</h3>
+    </div>
+    <p style="color:#475569; font-size:0.95rem; line-height:1.6; margin:0;">
+      Moderators review crowd-sourced pins submitted by women across key metro belts (Westdene, Willows, Universitas, Brandwag, CBD). Triage unverified pins, calibrate detour radii, and enforce safety audit compliance per SRS §3.7.
+    </p>
+  </div>
+
+  <!-- Pillar 2 -->
+  <div class="card" style="border-left:5px solid var(--warning); margin-bottom:0;">
+    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem;">
+      <div style="font-size:1.8rem;">⚡</div>
+      <h3 class="card-title" style="margin:0;">Panic Pipeline Simulation</h3>
+    </div>
+    <p style="color:#475569; font-size:0.95rem; line-height:1.6; margin:0;">
+      Demonstrates the emergency pipeline without endangering end-users. Inspect zero-unlock trigger logs (Voice 'Help', Triple-Press, Fall Detection, Geofence Stand-Down) and verify Next-of-Kin notifications.
+    </p>
+  </div>
+
+  <!-- Pillar 3 -->
+  <div class="card" style="border-left:5px solid var(--police-blue); margin-bottom:0;">
+    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem;">
+      <div style="font-size:1.8rem;">🏥</div>
+      <h3 class="card-title" style="margin:0;">Safe Havens &amp; Sanctuaries Directory</h3>
+    </div>
+    <p style="color:#475569; font-size:0.95rem; line-height:1.6; margin:0;">
+      Curate verified 24-hour SAPS desks, trauma casualty units, and accredited women's shelters. Supply direct routing coordinates and emergency hotlines to ensure women always know where to run, not just what to avoid.
+    </p>
+  </div>
+
+  <!-- Pillar 4 -->
+  <div class="card" style="border-left:5px solid var(--shelter-purple); margin-bottom:0;">
+    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem;">
+      <div style="font-size:1.8rem;">🏢</div>
+      <h3 class="card-title" style="margin:0;">Institutional Partnerships</h3>
+    </div>
+    <p style="color:#475569; font-size:0.95rem; line-height:1.6; margin:0;">
+      Institutional accounts provide enterprise coverage for university campus safety directorates, accredited student residences, and Business Improvement Districts (BIDs) with corridor-level heatmaps and SLA reporting.
+    </p>
+  </div>
+</div>
+
+<!-- Web Console vs Mobile Flutter Notice -->
+<div class="card" style="background:#f8fafc; border:1px solid #e2e8f0; padding:1.5rem;">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+    <div>
+      <h4 style="color:var(--dark); margin:0 0 0.35rem; font-size:1rem; font-weight:700;">
+        Looking for the SafeHer Mobile App?
+      </h4>
+      <p style="color:#64748b; font-size:0.85rem; margin:0; line-height:1.5;">
+        The end-user mobile client is built natively in Flutter for iOS and Android, featuring background sensors, physical key hooks, and offline routing. This web console is restricted to operational management.
+      </p>
+    </div>
+    <a href="{% url 'core:about' %}" class="btn btn-outline" style="font-size:0.85rem; white-space:nowrap;">
+      Read Technical Manifesto
+    </a>
+  </div>
+</div>
+{% endblock %}

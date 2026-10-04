@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}Operations Dashboard — SafeHer{% endblock %}
+
+{% block content %}
+<!-- a. Header -->
+<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+  <div>
+    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.35rem; flex-wrap:wrap;">
+      <span class="badge badge-police">SafeHer Operations Platform</span>
+      {% if user.is_superuser %}
+        <span class="badge badge-danger">System Administrator</span>
+      {% elif user.profile.role == 'moderator' %}
+        <span class="badge badge-police">Community Safety Moderator</span>
+      {% elif user.profile.role == 'institutional' %}
+        <span class="badge badge-shelter">Institutional Partner</span>
+      {% else %}
+        <span class="badge badge-police">{{ user.profile.get_role_display|default:"Operations Staff" }}</span>
+      {% endif %}
+      {% if DEMO_MODE %}
+        <span class="badge badge-warning">Preview / Demo Mode</span>
+      {% endif %}
+    </div>
+    <h1 style="font-size:1.85rem; font-weight:800; color:var(--dark); margin:0;">
+      SafeHer Operations Dashboard
+    </h1>
+    <p style="color:#64748b; font-size:0.95rem; margin:0.25rem 0 0;">
+      Welcome, <strong>{{ user.first_name|default:user.username }}</strong> &bull; Incident Triage, Hazard Moderation &amp; Simulation Oversight
+    </p>
+  </div>
+
+  <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+    <a href="{% url 'moderation:dashboard' %}" class="btn btn-primary" style="font-size:0.85rem;">
+      🛡️ Moderation Queue
+    </a>
+    <a href="{% url 'hotspots:map' %}" class="btn btn-police" style="font-size:0.85rem;">
+      🗺️ Open Live Map
+    </a>
+  </div>
+</div>
+
+<!-- SRS v1.2 Mandatory Escalation Architecture Notice -->
+<div style="background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid var(--police-blue); border-radius:0.5rem; padding:0.85rem 1.15rem; margin-bottom:1.5rem; font-size:0.85rem; color:#1e40af; line-height:1.5;">
+  <strong>Mandatory Operational Architecture (SRS v1.2 §2.8):</strong> SafeHer escalates emergency alerts <strong>exclusively to the user's verified Next-of-Kin contacts</strong>. No automatic police dispatch is claimed or executed. This operations dashboard is for admins, moderators, and institutional partners — end-user panic triggers are simulated via pipeline review.
+</div>
+
+<!-- b. Stats Row (grid-4) -->
+<div class="grid-4" style="margin-bottom:1.5rem;">
+  <!-- Total Active Hotspots -->
+  <div class="card" style="margin-bottom:0; text-align:center; padding:1.25rem 1rem; border-top:4px solid var(--police-blue);">
+    <div style="font-size:2.2rem; font-weight:800; color:var(--police-blue);">
+      {{ total_active_hotspots|default:recent_hotspots.count }}
+    </div>
+    <div style="font-size:0.85rem; font-weight:700; color:#64748b; margin-top:0.25rem;">
+      <span class="badge badge-police">Total Active Hotspots</span>
+    </div>
+  </div>
+
+  <!-- Flagged (Needs Review) -->
+  <div class="card" style="margin-bottom:0; text-align:center; padding:1.25rem 1rem; border-top:4px solid var(--danger);">
+    <div style="font-size:2.2rem; font-weight:800; color:var(--danger);">
+      {{ flagged_hotspot_count|default:"0" }}
+    </div>
+    <div style="font-size:0.85rem; font-weight:700; color:#64748b; margin-top:0.25rem;">
+      <span class="badge badge-danger">Flagged (Needs Review)</span>
+    </div>
+  </div>
+
+  <!-- Total Panic Simulations -->
+  <div class="card" style="margin-bottom:0; text-align:center; padding:1.25rem 1rem; border-top:4px solid var(--warning);">
+    <div style="font-size:2.2rem; font-weight:800; color:var(--warning);">
+      {{ total_panic_events|default:user.panic_alerts.count|default:"0" }}
+    </div>
+    <div style="font-size:0.85rem; font-weight:700; color:#64748b; margin-top:0.25rem;">
+      <span class="badge badge-warning">Total Panic Simulations</span>
+    </div>
+  </div>
+
+  <!-- Total Facilities -->
+  <div class="card" style="margin-bottom:0; text-align:center; padding:1.25rem 1rem; border-top:4px solid var(--success);">
+    <div style="font-size:2.2rem; font-weight:800; color:var(--success);">
+      {{ total_facilities|default:facilities_sample.count }}
+    </div>
+    <div style="font-size:0.85rem; font-weight:700; color:#64748b; margin-top:0.25rem;">
+      <span class="badge badge-success">Verified Safe Havens</span>
+    </div>
+  </div>
+</div>
+
+<!-- c. Card: Recent Danger Pins Requiring Attention -->
+<div class="card" style="margin-bottom:1.5rem;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+    <div>
+      <h3 class="card-title" style="margin:0;">Recent Danger Pins Requiring Attention</h3>
+      <p class="card-subtitle" style="margin:0;">Crowd-sourced hazard reports flagged or recently submitted for moderator verification.</p>
+    </div>
+    <a href="{% url 'moderation:dashboard' %}" class="btn btn-outline" style="font-size:0.85rem; padding:0.4rem 0.85rem;">
+      Open Moderation Queue &rarr;
+    </a>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:0.75rem;">
+    {% for h in recent_flagged|default:recent_hotspots %}
+      <div style="padding:0.85rem 1.15rem; border:1px solid #e2e8f0; border-radius:0.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; background:#ffffff; border-left:4px solid {% if h.verification_status == 'flagged' %}var(--danger){% elif h.verification_status == 'published' %}var(--success){% else %}var(--warning){% endif %};">
+        <div style="flex:1; min-width:260px;">
+          <div style="display:flex; align-items:center; gap:0.4rem; margin-bottom:0.35rem; flex-wrap:wrap;">
+            <span class="badge badge-police">{{ h.get_corridor_display|default:h.corridor }}</span>
+            <span class="badge {% if h.severity == 'CRITICAL' or h.severity == 'HIGH' %}badge-danger{% else %}badge-warning{% endif %}">
+              {{ h.get_severity_display|default:h.severity }}
+            </span>
+            <span class="badge {% if h.verification_status == 'flagged' %}badge-danger{% elif h.verification_status == 'published' %}badge-success{% else %}badge-warning{% endif %}">
+              {{ h.get_verification_status_display|default:h.verification_status|title }}
+            </span>
+            <span style="font-size:0.75rem; color:#64748b;">Radius: {{ h.danger_radius_meters }}m</span>
+          </div>
+          <h4 style="margin:0 0 0.25rem; font-size:1.05rem; color:var(--dark);">{{ h.title }}</h4>
+          <p style="margin:0 0 0.35rem; font-size:0.85rem; color:#475569;">{{ h.description|truncatechars:100 }}</p>
+          {% if h.flag_reason %}
+            <div style="font-size:0.8rem; color:#92400e; background:#fef3c7; border:1px solid #fde68a; padding:0.25rem 0.5rem; border-radius:0.3rem; display:inline-block;">
+              ⚠️ Flag Reason: {{ h.flag_reason|truncatechars:85 }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div style="text-align:right;">
+          <div style="font-size:0.75rem; color:#64748b; margin-bottom:0.4rem;">🕒 {{ h.created_at|date:"Y-m-d H:i" }}</div>
+          <a href="{% url 'moderation:review' h.id %}" class="btn btn-outline" style="font-size:0.8rem; padding:0.35rem 0.8rem;">
+            🔍 Review Hotspot
+          </a>
+        </div>
+      </div>
+    {% empty %}
+      <div style="text-align:center; padding:2rem; background:#f8fafc; border-radius:0.5rem;">
+        <p style="color:#64748b; margin:0;">No active hotspots pending review. Safety map is up-to-date.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- d. Card: Recent Panic Pipeline Simulations -->
+<div class="card" style="margin-bottom:1.5rem;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+    <div>
+      <h3 class="card-title" style="margin:0;">Recent Panic Pipeline Simulations</h3>
+      <p class="card-subtitle" style="margin:0;">Simulated emergency triggers, stand-down windows, and Next-of-Kin notification dispatches.</p>
+    </div>
+    <a href="{% url 'emergency:history' %}" class="btn btn-outline" style="font-size:0.85rem; padding:0.4rem 0.85rem;">
+      View All Incident Logs &rarr;
+    </a>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:0.75rem;">
+    {% for alert in recent_panics|default:user.panic_alerts.all|slice:":5" %}
+      <div style="padding:0.85rem 1.15rem; border:1px solid #e2e8f0; border-radius:0.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; background:#ffffff;">
+        <div>
+          <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.3rem; flex-wrap:wrap;">
+            <strong>Incident #{{ alert.id }}</strong>
+            <span class="badge {% if alert.status == 'ACTIVE' %}badge-danger{% elif alert.status == 'FALSE_ALARM' or alert.status == 'RESOLVED' %}badge-success{% else %}badge-warning{% endif %}">
+              {{ alert.get_status_display }}
+            </span>
+            <span class="badge badge-police">{{ alert.get_trigger_source_display }}</span>
+          </div>
+          <div style="font-size:0.8rem; color:#64748b;">
+            Started: <strong>{{ alert.started_at|date:"Y-m-d H:i:s" }}</strong> &bull; GPS: <code>{{ alert.latitude|floatformat:4 }}, {{ alert.longitude|floatformat:4 }}</code> &bull; Escalation: <strong style="color:var(--police-blue);">Next-of-Kin ONLY</strong> ({{ alert.notifications.count }} dispatches)
+          </div>
+        </div>
+
+        <div>
+          <a href="{% url 'emergency:stand_down' alert.id %}" class="btn btn-outline" style="font-size:0.8rem; padding:0.35rem 0.8rem;">
+            Inspect Pipeline
+          </a>
+        </div>
+      </div>
+    {% empty %}
+      <div style="text-align:center; padding:2rem; background:#f8fafc; border-radius:0.5rem;">
+        <p style="color:#64748b; margin:0;">No panic pipeline simulations executed yet. You can inspect pipeline logs under Emergency History.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- e. Card: Quick Navigation -->
+<div class="card" style="margin-bottom:1.5rem;">
+  <h3 class="card-title" style="margin-bottom:0.25rem;">Quick Navigation</h3>
+  <p class="card-subtitle" style="margin-bottom:1.15rem;">Access SafeHer operations hub and moderation tools.</p>
+
+  <div class="grid-3" style="gap:0.85rem;">
+    <a href="{% url 'hotspots:map' %}" class="btn btn-outline" style="justify-content:flex-start; padding:0.85rem 1rem; text-decoration:none;">
+      <span style="font-size:1.35rem; margin-right:0.35rem;">🗺️</span>
+      <div style="text-align:left;">
+        <div style="font-weight:700; color:var(--dark);">Live Safety Map</div>
+        <small style="color:#64748b;">CartoDB Voyager tiles &amp; automated detours</small>
+      </div>
+    </a>
+
+    <a href="{% url 'moderation:dashboard' %}" class="btn btn-outline" style="justify-content:flex-start; padding:0.85rem 1rem; text-decoration:none;">
+      <span style="font-size:1.35rem; margin-right:0.35rem;">🛡️</span>
+      <div style="text-align:left;">
+        <div style="font-weight:700; color:var(--dark);">Moderation Queue</div>
+        <small style="color:#64748b;">Review &amp; verify flagged danger pins</small>
+      </div>
+    </a>
+
+    <a href="{% url 'facilities:list' %}" class="btn btn-outline" style="justify-content:flex-start; padding:0.85rem 1rem; text-decoration:none;">
+      <span style="font-size:1.35rem; margin-right:0.35rem;">🏥</span>
+      <div style="text-align:left;">
+        <div style="font-weight:700; color:var(--dark);">Facilities Directory</div>
+        <small style="color:#64748b;">24h SAPS desks, clinics, women shelters</small>
+      </div>
+    </a>
+
+    <a href="{% url 'emergency:simulation' %}" class="btn btn-outline" style="justify-content:flex-start; padding:0.85rem 1rem; text-decoration:none;">
+      <span style="font-size:1.35rem; margin-right:0.35rem;">⚡</span>
+      <div style="text-align:left;">
+        <div style="font-weight:700; color:var(--dark);">Simulation Center</div>
+        <small style="color:#64748b;">Zero-unlock trigger tests &amp; stand-down</small>
+      </div>
+    </a>
+
+    <a href="{% url 'emergency:history' %}" class="btn btn-outline" style="justify-content:flex-start; padding:0.85rem 1rem; text-decoration:none;">
+      <span style="font-size:1.35rem; margin-right:0.35rem;">🚨</span>
+      <div style="text-align:left;">
+        <div style="font-weight:700; color:var(--dark);">Emergency History</div>
+        <small style="color:#64748b;">Audit logs of Next-of-Kin notifications</small>
+      </div>
+    </a>
+
+    <a href="/admin/" class="btn btn-outline" style="justify-content:flex-start; padding:0.85rem 1rem; text-decoration:none;">
+      <span style="font-size:1.35rem; margin-right:0.35rem;">⚙️</span>
+      <div style="text-align:left;">
+        <div style="font-weight:700; color:var(--dark);">Admin Panel</div>
+        <small style="color:#64748b;">Django administrator console (/admin/)</small>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- f. Card: Institutional Partners -->
+<div class="card" style="margin-bottom:0;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+    <div>
+      <h3 class="card-title" style="margin:0;">Institutional Partners</h3>
+      <p class="card-subtitle" style="margin:0;">Enterprise &amp; campus partners: university directorates, student residences, and Business Improvement Districts (BIDs).</p>
+    </div>
+    <span class="badge badge-police">FR-PAY-8 Enterprise</span>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:0.75rem;">
+    {% for inst in institutional_accounts %}
+      <div style="padding:0.85rem 1.15rem; border:1px solid #e2e8f0; border-radius:0.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; background:#ffffff;">
+        <div>
+          <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.3rem; flex-wrap:wrap;">
+            <strong style="font-size:1rem; color:var(--dark);">{{ inst.name }}</strong>
+            <span class="badge badge-police">{{ inst.get_institution_type_display }}</span>
+            <span class="badge {% if inst.status == 'active' %}badge-success{% elif inst.status == 'trial' %}badge-warning{% else %}badge-danger{% endif %}">
+              {{ inst.get_status_display }}
+            </span>
+          </div>
+          <div style="font-size:0.8rem; color:#64748b;">
+            Corridor: <strong>{{ inst.covered_corridor }}</strong> &bull; Protected Students: <strong>{{ inst.active_students_protected }}</strong> &bull; Contact: {{ inst.contact_person }} ({{ inst.contact_email }})
+          </div>
+        </div>
+        <div>
+          <span class="badge badge-shelter">{{ inst.get_plan_display }}</span>
+        </div>
+      </div>
+    {% empty %}
+      <div style="background:#f8fafc; padding:1.75rem; border-radius:0.5rem; text-align:center;">
+        <p style="color:#64748b; font-size:0.9rem; margin-bottom:0.35rem;">
+          No institutional partner accounts configured yet.
+        </p>
+        <small style="color:#94a3b8; display:block; max-width:650px; margin:0 auto; line-height:1.5;">
+          Institutional accounts provide safety coverage to accredited student residences, university campuses, and Business Improvement Districts (BIDs) with custom danger perimeter feeds and incident telemetry.
+        </small>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Pin Dangerous Area - SafeHer{% endblock %}
+
+{% block content %}
+<div style="max-width:700px; margin:1.5rem auto;">
+  <div class="card" style="padding:2rem;">
+    <h2 class="card-title">Pin an Unsafe Area</h2>
+    <p class="card-subtitle">
+      Share the crime knowledge you carry. When other women navigate nearby, they will be automatically routed around this zone.
+    </p>
+
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.latitude }}
+      {{ form.longitude }}
+
+      <div class="form-group">
+        <label class="form-label">Location Title</label>
+        {{ form.title }}
+        {{ form.title.errors }}
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Danger Category</label>
+          {{ form.category }}
+          {{ form.category.errors }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Risk Severity Level</label>
+          {{ form.severity }}
+          {{ form.severity.errors }}
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Time of Highest Risk</label>
+          {{ form.risk_time }}
+          {{ form.risk_time.errors }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Danger Radius (Meters)</label>
+          {{ form.danger_radius_meters }}
+          <small style="color:#64748b;">Area around this point that will be bypassed (e.g. 200m).</small>
+          {{ form.danger_radius_meters.errors }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Pin Location on Map (Click or Drag Marker)</label>
+        <div id="pin-picker-map" style="height:280px; border-radius:0.5rem; border:1px solid #e2e8f0; margin-bottom:0.5rem;"></div>
+        <small style="color:#64748b;">Selected Coordinates: <span id="coords-text" style="font-family:monospace; font-weight:600;">-29.1181, 26.2249</span></small>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Context &amp; Safety Details</label>
+        {{ form.description }}
+        {{ form.description.errors }}
+      </div>
+
+      <div class="form-group" style="display:flex; align-items:center; gap:0.5rem; margin-top:1rem;">
+        {{ form.is_anonymous }}
+        <label style="font-weight:600; font-size:0.9rem;">Post Anonymously (Do not display my name with this report)</label>
+      </div>
+
+      <div style="display:flex; gap:1rem; margin-top:1.5rem;">
+        <button type="submit" class="btn btn-primary" style="flex:2; padding:0.75rem;">
+          📍 Pin Danger Zone to Shared Map
+        </button>
+        <a href="{% url 'hotspots:map' %}" class="btn btn-outline" style="flex:1;">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  let initialLat = parseFloat("{{ form.latitude.value|default:'-29.1181' }}") || -29.1181;
+  let initialLon = parseFloat("{{ form.longitude.value|default:'26.2249' }}") || 26.2249;
+
+  const latInput = document.getElementById("id_latitude");
+  const lonInput = document.getElementById("id_longitude");
+  const coordsText = document.getElementById("coords-text");
+
+  latInput.value = initialLat;
+  lonInput.value = initialLon;
+  coordsText.innerText = `${initialLat.toFixed(5)}, ${initialLon.toFixed(5)}`;
+
+  const pickerMap = L.map("pin-picker-map").setView([initialLat, initialLon], 14);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    subdomains: "abc",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/">Humanitarian OpenStreetMap Team</a> | SafeHer',
+  }).addTo(pickerMap);
+
+  const marker = L.marker([initialLat, initialLon], { draggable: true }).addTo(pickerMap);
+
+  function updateMarker(lat, lng) {
+    marker.setLatLng([lat, lng]);
+    latInput.value = lat.toFixed(6);
+    lonInput.value = lng.toFixed(6);
+    coordsText.innerText = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  }
+
+  marker.on("dragend", (e) => {
+    const pos = marker.getLatLng();
+    updateMarker(pos.lat, pos.lng);
+  });
+
+  pickerMap.on("click", (e) => {
+    updateMarker(e.latlng.lat, e.latlng.lng);
+  });
+
+  if ("geolocation" in navigator && !latInput.value) {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      pickerMap.setView([pos.coords.latitude, pos.coords.longitude], 15);
+      updateMarker(pos.coords.latitude, pos.coords.longitude);
+    });
+  }
+});
+</script>
+{% endblock %}
