@@ -16,7 +16,7 @@ from core.ratelimit import is_rate_limited
 @login_required
 def trigger_panic(request):
     """
-    Unified entrypoint for the SafeHer Panic Pipeline (FR-PANIC).
+    Unified entrypoint for the Woman For Safety Panic Pipeline (FR-PANIC).
     Supports: Manual button, Voice 'Help', Fall detection, Triple-press, Geofence timeout.
     """
     if request.method == "POST":
@@ -51,7 +51,7 @@ def trigger_panic(request):
         # Check Next of Kin warning (FR-PANIC-9: surface to user if no NOK configured)
         nok_exists = EmergencyContact.objects.filter(user=request.user, notify_on_panic=True).exists()
 
-        standdown_total = getattr(settings, "SAFEHER_STANDDOWN_SECONDS", 60)
+        standdown_total = getattr(settings, "WFS_STANDDOWN_SECONDS", 60)
 
         # Create alert record
         alert = PanicAlert.objects.create(
@@ -117,7 +117,7 @@ def stand_down_view(request, alert_id):
         "seconds_remaining": alert.seconds_remaining,
         "notifications": notifications,
         "nok_count": nok_count,
-        "is_demo": getattr(settings, "SAFEHER_DEMO_MODE", True),
+        "is_demo": getattr(settings, "WFS_DEMO_MODE", True),
     }
     return render(request, "emergency/stand_down.html", context)
 
@@ -134,7 +134,7 @@ def stand_down_cancel(request, alert_id):
     expected_pin = profile.safe_pin or "1234"
 
     # Allow cancellation if PIN matches or in demo mode with PIN provided
-    if pin == expected_pin or (not pin and getattr(settings, "SAFEHER_DEMO_MODE", True)):
+    if pin == expected_pin or (not pin and getattr(settings, "WFS_DEMO_MODE", True)):
         alert.status = PanicAlert.STATUS_FALSE_ALARM
         alert.stood_down_at = timezone.now()
         alert.save()
@@ -226,7 +226,7 @@ def simulation_center(request):
         "recent_simulations": recent_simulations,
         "active_alert": active_alert,
         "safe_pin": getattr(user.profile, "safe_pin", "2468"),
-        "is_demo": getattr(settings, "SAFEHER_DEMO_MODE", True),
+        "is_demo": getattr(settings, "WFS_DEMO_MODE", True),
     }
     return render(request, "emergency/simulation.html", context)
 

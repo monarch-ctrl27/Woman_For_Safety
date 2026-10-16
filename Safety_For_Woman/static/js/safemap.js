@@ -1,5 +1,5 @@
 /**
- * SafeHer Regional Intelligence & Moderation Map Engine
+ * Woman For Safety Regional Intelligence & Moderation Map Engine
  * Uses CartoDB Voyager tiles (unrestricted, high-performance, non-blocking)
  * Overlays:
  * - Bloemfontein Crime Corridors (Westdene, Willows, Universitas, Brandwag, CBD)
@@ -28,24 +28,24 @@ const SafeMap = {
     const hotLayer = L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
       maxZoom: 19,
       subdomains: "abc",
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/">Humanitarian OpenStreetMap Team</a> | SafeHer Ops',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/">Humanitarian OpenStreetMap Team</a> | WFS Ops',
     });
 
     const esriLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
       maxZoom: 19,
-      attribution: 'Tiles &copy; <a href="https://www.esri.com/">Esri</a> &mdash; World Street Map | SafeHer Ops',
+      attribution: 'Tiles &copy; <a href="https://www.esri.com/">Esri</a> &mdash; World Street Map | WFS Ops',
     });
 
     const osmFrLayer = L.tileLayer("https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png", {
       maxZoom: 20,
       subdomains: "abc",
-      attribution: '&copy; OpenStreetMap France | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | SafeHer Ops',
+      attribution: '&copy; OpenStreetMap France | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | WFS Ops',
     });
 
     const cyclOsmLayer = L.tileLayer("https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png", {
       maxZoom: 18,
       subdomains: "abc",
-      attribution: '&copy; <a href="https://www.cyclosm.org/">CyclOSM</a> | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | SafeHer Ops',
+      attribution: '&copy; <a href="https://www.cyclosm.org/">CyclOSM</a> | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | WFS Ops',
     });
 
     // Default to Humanitarian Safety Layer (HOT)

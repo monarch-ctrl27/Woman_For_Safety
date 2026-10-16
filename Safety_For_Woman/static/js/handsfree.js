@@ -1,5 +1,5 @@
 /**
- * SafeHer Hands-Free Safety Suite
+ * Woman For Safety Hands-Free Safety Suite
  * Implements:
  * 1. Triple-Press Key / Power Button Panic Trigger
  * 2. Continuous Voice Recognition ("Help!" / "Emergency")
@@ -7,7 +7,7 @@
  * 4. Geofence Proximity Monitor with Device Vibration & Stand-Down
  */
 
-const SafeHer = {
+const Woman For Safety = {
   activeCoords: { lat: -29.1181, lon: 26.2249 }, // Default Bloemfontein Central
   batteryLevel: null,
   voiceActive: false,
@@ -87,7 +87,7 @@ const SafeHer = {
       this.keyPressTimes.push(now);
 
       if (this.keyPressTimes.length >= 3) {
-        console.warn("SafeHer: Triple-press emergency trigger fired!");
+        console.warn("Woman For Safety: Triple-press emergency trigger fired!");
         this.keyPressTimes = [];
         this.firePanic("TRIPLE_PRESS", true);
       }
@@ -130,14 +130,14 @@ const SafeHer = {
       this.recognition.onresult = (event) => {
         for (let i = event.resultIndex; i < event.results.length; ++i) {
           const phrase = event.results[i][0].transcript.toLowerCase();
-          console.log("SafeHer Voice heard:", phrase);
+          console.log("Woman For Safety Voice heard:", phrase);
           if (
             phrase.includes("help") ||
             phrase.includes("safeher") ||
             phrase.includes("emergency") ||
             phrase.includes("police")
           ) {
-            console.warn("SafeHer: Voice distress keyword detected!");
+            console.warn("Woman For Safety: Voice distress keyword detected!");
             this.playAlertSound();
             this.firePanic("VOICE", false);
             break;
@@ -203,7 +203,7 @@ const SafeHer = {
         // Phase 2: High impact spike (> 24.0 m/s^2) following free fall
         if (this.freeFallDetected && magnitude > 24.0) {
           this.freeFallDetected = false;
-          console.warn("SafeHer: Sudden fall impact detected by accelerometer!");
+          console.warn("Woman For Safety: Sudden fall impact detected by accelerometer!");
           this.firePanic("FALL_DETECTION", false);
         }
       });
@@ -344,5 +344,5 @@ const SafeHer = {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  SafeHer.init();
+  Woman For Safety.init();
 });

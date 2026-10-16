@@ -14,7 +14,7 @@ from moderation.models import ModerationLog
 
 class Command(BaseCommand):
     help = (
-        "Seeds the SafeHer operations platform with comprehensive mock data "
+        "Seeds the Woman For Safety operations platform with comprehensive mock data "
         "across all Bloemfontein corridors — users, hotspots, facilities, "
         "panic simulations, moderation logs, and institutional accounts. "
         "(SRS v1.2 FR-PREV-1 through FR-PREV-6)"
@@ -29,14 +29,14 @@ class Command(BaseCommand):
         self._seed_institutional_accounts()
 
         self.stdout.write(self.style.SUCCESS(
-            "\n✅ Successfully seeded SafeHer operations database with full Preview Mode data!"
+            "\n✅ Successfully seeded Woman For Safety operations database with full Preview Mode data!"
         ))
         self.stdout.write(self.style.SUCCESS(
             "   Login credentials:\n"
-            "   • Admin:      admin / SafeHerAdmin2026!\n"
-            "   • Moderator:  mod_thandi / SafeHerMod2026!\n"
-            "   • User:       sarah / SafeHerPassword2026!\n"
-            "   • Inst. User: ufs_safety / SafeHerUFS2026!\n"
+            "   • Admin:      admin / WFSAdmin2026!\n"
+            "   • Moderator:  mod_thandi / WFSMod2026!\n"
+            "   • User:       sarah / WFSPassword2026!\n"
+            "   • Inst. User: ufs_safety / WFSUFS2026!\n"
         ))
 
     # ─────────────────────────────────────────────────────────
@@ -173,7 +173,7 @@ class Command(BaseCommand):
         users_data = [
             {
                 "username": "admin",
-                "password": "SafeHerAdmin2026!",
+                "password": "WFSAdmin2026!",
                 "email": "admin@safeher.co.za",
                 "first_name": "Sipho",
                 "last_name": "Mokoena",
@@ -185,7 +185,7 @@ class Command(BaseCommand):
             },
             {
                 "username": "mod_thandi",
-                "password": "SafeHerMod2026!",
+                "password": "WFSMod2026!",
                 "email": "thandi.moderation@safeher.co.za",
                 "first_name": "Thandi",
                 "last_name": "Nkosi",
@@ -197,7 +197,7 @@ class Command(BaseCommand):
             },
             {
                 "username": "mod_lerato",
-                "password": "SafeHerMod2026!",
+                "password": "WFSMod2026!",
                 "email": "lerato.moderation@safeher.co.za",
                 "first_name": "Lerato",
                 "last_name": "Moloi",
@@ -209,7 +209,7 @@ class Command(BaseCommand):
             },
             {
                 "username": "sarah",
-                "password": "SafeHerPassword2026!",
+                "password": "WFSPassword2026!",
                 "email": "sarah.khumalo@example.co.za",
                 "first_name": "Sarah",
                 "last_name": "Khumalo",
@@ -221,7 +221,7 @@ class Command(BaseCommand):
             },
             {
                 "username": "zanele",
-                "password": "SafeHerUser2026!",
+                "password": "WFSUser2026!",
                 "email": "zanele.dube@example.co.za",
                 "first_name": "Zanele",
                 "last_name": "Dube",
@@ -233,7 +233,7 @@ class Command(BaseCommand):
             },
             {
                 "username": "palesa",
-                "password": "SafeHerUser2026!",
+                "password": "WFSUser2026!",
                 "email": "palesa.m@example.co.za",
                 "first_name": "Palesa",
                 "last_name": "Mothibi",
@@ -245,7 +245,7 @@ class Command(BaseCommand):
             },
             {
                 "username": "ufs_safety",
-                "password": "SafeHerUFS2026!",
+                "password": "WFSUFS2026!",
                 "email": "safety@ufs.ac.za",
                 "first_name": "Campus",
                 "last_name": "Safety Officer",
@@ -803,7 +803,7 @@ class Command(BaseCommand):
                         channel=ContactNotificationLog.CHANNEL_CALL if contact.priority == 1 else ContactNotificationLog.CHANNEL_SMS,
                         status=ContactNotificationLog.STATUS_SIMULATED,
                         message_body=(
-                            f"[SIMULATED] SafeHer NOK Alert: {p_data['user'].first_name} "
+                            f"[SIMULATED] WFS NOK Alert: {p_data['user'].first_name} "
                             f"{p_data['user'].last_name} triggered a {alert.get_trigger_source_display()} alert. "
                             f"Location: {p_data['latitude']}, {p_data['longitude']}. "
                             f"Google Maps: https://maps.google.com/?q={p_data['latitude']},{p_data['longitude']}"

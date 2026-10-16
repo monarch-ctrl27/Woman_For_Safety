@@ -1,8 +1,8 @@
-# SafeHer 🛡️ Operations, Moderation & Simulation Platform
+# Woman For Safety 🛡️ Operations, Moderation & Simulation Platform
 > **Bloom Innovators — BizTech Nexus Innovation Hackathon 2026**
 > *Crowd-Sourced Safety Map & Hands-Free Panic Response Platform (SRS v1.2 Compliant)*
 
-SafeHer is a comprehensive women's safety ecosystem comprising an **Android-first Flutter mobile application** (under active development for end-users) paired with this **Django Operations, Moderation & Simulation Web Console**.
+Woman For Safety is a comprehensive women's safety ecosystem comprising an **Android-first Flutter mobile application** (under active development for end-users) paired with this **Django Operations, Moderation & Simulation Web Console**.
 
 This platform provides community safety moderators, campus security directors, institutional partners, and system administrators with:
 1. **Live Corridor Hazard Intelligence:** Real-time visibility into crowd-sourced danger zones across all major Bloemfontein safety corridors.
@@ -48,7 +48,7 @@ Evaluators and administrators can simulate zero-unlock mobile triggers directly 
 
 ## 🛡️ SRS v1.2 Mandatory Safety Compliance Notice
 > **CRITICAL ARCHITECTURAL GUARANTEE (SRS v1.2 §2.8):**
-> SafeHer emergency escalations route **exclusively to the user's verified Next-of-Kin contacts**. 
+> Woman For Safety emergency escalations route **exclusively to the user's verified Next-of-Kin contacts**. 
 > - **No build claims or executes automated police dispatch.**
 > - Alerts provide the recipient with the user's live GPS coordinates, battery level, trigger source, and the contact number of the nearest safe sanctuary (e.g. SAPS Bloemfontein Central or Pelonomi GBV Care Centre), empowering next-of-kin to coordinate assistance safely.
 > - **Dual-Channel Delivery:** Priority Voice Call / SMS paired with immediate WhatsApp message backup (FR-PANIC-6).
@@ -74,12 +74,12 @@ Open your browser to: **[http://127.0.0.1:8000/](http://127.0.0.1:8000/)**
 
 | Role | Username | Password | Purpose & Capabilities |
 |---|---|---|---|
-| **System Administrator** | `admin` | `SafeHerAdmin2026!` | Full Django admin access, platform configuration, and telemetry oversight |
-| **Community Safety Moderator** | `mod_thandi` | `SafeHerMod2026!` | Review flagged danger pins, approve/remove hotspots, view audit logs |
-| **Community Safety Moderator** | `mod_lerato` | `SafeHerMod2026!` | Secondary corridor review, dispute resolution, radius modification |
-| **Primary End-User** | `sarah` | `SafeHerPassword2026!` | Pre-configured with Next-of-Kin contacts, PIN `2468`, simulation profile |
-| **Student User** | `zanele` | `SafeHerUser2026!` | Student commuter profile with Willows / CUT route history |
-| **Campus Safety Officer** | `ufs_safety` | `SafeHerUFS2026!` | UFS Institutional Partner account with campus corridor perimeter telemetry |
+| **System Administrator** | `admin` | `Woman For SafetyAdmin2026!` | Full Django admin access, platform configuration, and telemetry oversight |
+| **Community Safety Moderator** | `mod_thandi` | `Woman For SafetyMod2026!` | Review flagged danger pins, approve/remove hotspots, view audit logs |
+| **Community Safety Moderator** | `mod_lerato` | `Woman For SafetyMod2026!` | Secondary corridor review, dispute resolution, radius modification |
+| **Primary End-User** | `sarah` | `Woman For SafetyPassword2026!` | Pre-configured with Next-of-Kin contacts, PIN `2468`, simulation profile |
+| **Student User** | `zanele` | `Woman For SafetyUser2026!` | Student commuter profile with Willows / CUT route history |
+| **Campus Safety Officer** | `ufs_safety` | `Woman For SafetyUFS2026!` | UFS Institutional Partner account with campus corridor perimeter telemetry |
 
 ---
 
@@ -132,5 +132,6 @@ Woman_For_Safety/
 │   │   └── moderation/                          # Dashboard, review, and immutable audit log screens
 │   └── static/                                  # Stylesheet, CartoDB safemap.js, sensor triggers
 ```
-#   W o m a n _ F o r _ S a f e t y  
+#   W o m a n _ F o r _ S a f e t y 
+ 
  

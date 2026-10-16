@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Review Hotspot — SafeHer Moderation{% endblock %}
+{% block title %}Review Hotspot — Woman For Safety Moderation{% endblock %}
 
 {% block content %}
 <div style="margin-bottom:1.5rem;">
@@ -14,7 +14,7 @@
         <span class="badge badge-police">Audit ID #{{ hotspot.id }}</span>
       </div>
       <h1 style="font-size:1.85rem; font-weight:800; color:var(--dark); margin:0;">
-        Review Hotspot — SafeHer Moderation
+        Review Hotspot — Woman For Safety Moderation
       </h1>
       <p style="color:#64748b; font-size:0.95rem; margin:0.25rem 0 0;">
         Community safety moderator review &amp; danger zone radius calibration.
@@ -230,7 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
     L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
       maxZoom: 19,
       subdomains: "abc",
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/">Humanitarian OpenStreetMap Team</a> | SafeHer Ops'
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/">Humanitarian OpenStreetMap Team</a> | WFS Ops'
     }).addTo(detailMap);
 
     // Hazard Marker

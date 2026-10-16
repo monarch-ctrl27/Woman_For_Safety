@@ -1,5 +1,5 @@
 """
-SafeHer Django settings.
+Woman For Safety Django settings.
 
 Security notes
 ---------------
@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # SafeHer apps
+    # Woman For Safety apps
     "core",
     "accounts",
     "facilities",
@@ -193,23 +193,23 @@ TWILIO_FROM_NUMBER = os.environ.get("TWILIO_FROM_NUMBER", "")
 # SMS/API calls are made -- notifications are only written to the
 # ContactNotification log and the console. Flip to False + supply real
 # Twilio credentials to go live.
-SAFEHER_DEMO_MODE = env_bool("SAFEHER_DEMO_MODE", default=True)
+WFS_DEMO_MODE = env_bool("WFS_DEMO_MODE", default=True)
 
 # ---------------------------------------------------------------------------
-# SafeHer domain configuration
+# Woman For Safety domain configuration
 # ---------------------------------------------------------------------------
 # Bloemfontein bounding box used to project lat/lon onto the SVG safety map.
-SAFEHER_MAP_BOUNDS = {
+WFS_MAP_BOUNDS = {
     "lat_min": -29.16,
     "lat_max": -29.02,
     "lon_min": 26.05,
     "lon_max": 26.32,
 }
-SAFEHER_GEOFENCE_RADIUS_KM = 0.6       # "approaching" distance for a warning
-SAFEHER_STANDDOWN_SECONDS = 60          # stand-down countdown length
-SAFEHER_REPORT_RATE_LIMIT = (3, 60 * 60)       # 3 reports / hour / user
-SAFEHER_PANIC_RATE_LIMIT = (5, 60 * 60)        # 5 panic activations / hour / user (abuse guard, never blocks the FIRST one)
-SAFEHER_CONTACT_RATE_LIMIT = (10, 60 * 60)     # 10 contact edits / hour / user
+WFS_GEOFENCE_RADIUS_KM = 0.6       # "approaching" distance for a warning
+WFS_STANDDOWN_SECONDS = 60          # stand-down countdown length
+WFS_REPORT_RATE_LIMIT = (3, 60 * 60)       # 3 reports / hour / user
+WFS_PANIC_RATE_LIMIT = (5, 60 * 60)        # 5 panic activations / hour / user (abuse guard, never blocks the FIRST one)
+WFS_CONTACT_RATE_LIMIT = (10, 60 * 60)     # 10 contact edits / hour / user
 
 # ---------------------------------------------------------------------------
 # Logging: moderation + security-relevant events always go to console
@@ -225,8 +225,8 @@ LOGGING = {
         "console": {"class": "logging.StreamHandler", "formatter": "verbose"},
     },
     "loggers": {
-        "safeher.security": {"handlers": ["console"], "level": "INFO", "propagate": False},
-        "safeher.moderation": {"handlers": ["console"], "level": "INFO", "propagate": False},
+        "wfs.security": {"handlers": ["console"], "level": "INFO", "propagate": False},
+        "wfs.moderation": {"handlers": ["console"], "level": "INFO", "propagate": False},
         "django.security": {"handlers": ["console"], "level": "WARNING", "propagate": False},
     },
 }

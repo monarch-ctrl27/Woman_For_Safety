@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Simulation Center — SafeHer Operations{% endblock %}
+{% block title %}Simulation Center — Woman For Safety Operations{% endblock %}
 
 {% block content %}
 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
@@ -31,7 +31,7 @@
 <!-- Mandatory Escalation Notice -->
 <div style="background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid var(--police-blue); border-radius:0.5rem; padding:0.85rem 1.15rem; margin-bottom:1.5rem; font-size:0.85rem; color:#1e40af; line-height:1.5;">
   <strong>Mandatory Operational Architecture (SRS v1.2 §2.8 &amp; FR-PANIC-1):</strong>
-  Every emergency trigger simulated below dispatches alerts <strong>exclusively to the user's verified Next-of-Kin contacts</strong> via primary voice/SMS with automatic WhatsApp backup. <em>SafeHer does NOT automatically dispatch police or emergency services.</em>
+  Every emergency trigger simulated below dispatches alerts <strong>exclusively to the user's verified Next-of-Kin contacts</strong> via primary voice/SMS with automatic WhatsApp backup. <em>Woman For Safety does NOT automatically dispatch police or emergency services.</em>
 </div>
 
 {% if active_alert %}
@@ -100,7 +100,7 @@
         2. Hands-Free Voice Distress ("Help!")
       </h3>
       <p style="font-size:0.85rem; color:#64748b; line-height:1.5; margin-bottom:1rem;">
-        Simulates the on-device acoustic keyword recognizer detecting distress cries ("Help!", "SafeHer", "Emergency") in South African English (<code>en-ZA</code>). Initiates the 60s stand-down window.
+        Simulates the on-device acoustic keyword recognizer detecting distress cries ("Help!", "Woman For Safety", "Emergency") in South African English (<code>en-ZA</code>). Initiates the 60s stand-down window.
       </p>
     </div>
     <form method="POST" action="{% url 'emergency:trigger' %}">
@@ -212,7 +212,7 @@
   <div class="card" style="margin-bottom:0;">
     <h3 class="card-title" style="margin-bottom:0.25rem;">False Alarm &amp; Stand-Down Protocol</h3>
     <p class="card-subtitle" style="margin-bottom:1rem;">
-      How SafeHer prevents unnecessary alarm fatigue (SRS §12.1).
+      How Woman For Safety prevents unnecessary alarm fatigue (SRS §12.1).
     </p>
 
     <div style="background:#f8fafc; padding:1rem; border-radius:0.5rem; border:1px solid #e2e8f0; margin-bottom:1rem;">

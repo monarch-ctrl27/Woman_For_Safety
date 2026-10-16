@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Pin Dangerous Area - SafeHer{% endblock %}
+{% block title %}Pin Dangerous Area - Woman For Safety{% endblock %}
 
 {% block content %}
 <div style="max-width:700px; margin:1.5rem auto;">
@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
   L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
     maxZoom: 19,
     subdomains: "abc",
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/">Humanitarian OpenStreetMap Team</a> | SafeHer',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/">Humanitarian OpenStreetMap Team</a> | Woman For Safety',
   }).addTo(pickerMap);
 
   const marker = L.marker([initialLat, initialLon], { draggable: true }).addTo(pickerMap);

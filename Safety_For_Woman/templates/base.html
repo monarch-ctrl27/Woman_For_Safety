@@ -41,7 +41,7 @@
   <header class="safe-header">
     <div class="nav-container">
       <a href="{% if user.is_authenticated %}{% url 'core:dashboard' %}{% else %}{% url 'core:home' %}{% endif %}" class="brand-logo">
-        <span>🛡️ SafeHer Ops</span>
+        <span>🛡️ WFS Ops</span>
         {% if DEMO_MODE %}<span class="brand-badge">Preview Mode</span>{% endif %}
       </a>
 
@@ -90,7 +90,7 @@
   <footer style="background:#ffffff; border-top:1px solid #e2e8f0; padding:1.5rem 1rem; margin-top:3rem; text-align:center; font-size:0.85rem; color:#64748b;">
     <div style="max-width:1200px; margin:0 auto; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem;">
       <div>
-        <strong>SafeHer Operations Platform</strong> &mdash; Admin, Moderation & Simulation Hub
+        <strong>Woman For Safety Operations Platform</strong> &mdash; Admin, Moderation & Simulation Hub
       </div>
       <div style="display:flex; gap:1.25rem; flex-wrap:wrap;">
         <span>🇿🇦 SAPS: <strong>10111</strong></span>
@@ -98,7 +98,7 @@
         <span>GBV Helpline: <strong>0800 150 150</strong></span>
       </div>
       <div>
-        <a href="{% url 'core:about' %}" style="color:#64748b; text-decoration:none;">About SafeHer</a>
+        <a href="{% url 'core:about' %}" style="color:#64748b; text-decoration:none;">About Woman For Safety</a>
       </div>
     </div>
   </footer>

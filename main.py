@@ -1,5 +1,5 @@
 """
-SafeHer Application Launcher
+Woman For Safety Application Launcher
 Allows launching the Django development server directly from PyCharm's 'Run main.py' button.
 """
 import os
@@ -22,9 +22,9 @@ def main():
     # Default to running the web server if no arguments are provided
     if len(sys.argv) <= 1:
         print("\n" + "=" * 65)
-        print("🛡️  SafeHer: Crowd-Sourced Safety Network & Panic Response")
+        print("🛡️  Woman For Safety: Crowd-Sourced Safety Network & Panic Response")
         print("🌍  Launching local development server at: http://127.0.0.1:8000/")
-        print("👤  Demo login: username='sarah' | password='SafeHerPassword2026!'")
+        print("👤  Demo login: username='sarah' | password='Woman For SafetyPassword2026!'")
         print("=" * 65 + "\n")
         execute_from_command_line([sys.argv[0], "runserver", "127.0.0.1:8000"])
     else:

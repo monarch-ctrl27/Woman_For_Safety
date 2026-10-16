@@ -72,7 +72,7 @@ def dashboard(request):
         "facilities_sample": facilities_sample,
         "institutional_accounts": institutional_accounts,
         "active_alert": active_alert,
-        "demo_mode": getattr(settings, "SAFEHER_DEMO_MODE", True),
+        "demo_mode": getattr(settings, "WFS_DEMO_MODE", True),
     }
     return render(request, "core/dashboard.html", context)
 

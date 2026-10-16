@@ -20,18 +20,18 @@ def map_view(request):
     - Real-time geofence proximity detection
     - Automated safe rerouting avoiding flagged hotspots
     """
-    bounds = getattr(settings, "SAFEHER_MAP_BOUNDS", {
+    bounds = getattr(settings, "WFS_MAP_BOUNDS", {
         "lat_min": -29.16,
         "lat_max": -29.02,
         "lon_min": 26.05,
         "lon_max": 26.32,
     })
-    geofence_km = getattr(settings, "SAFEHER_GEOFENCE_RADIUS_KM", 0.6)
+    geofence_km = getattr(settings, "WFS_GEOFENCE_RADIUS_KM", 0.6)
 
     context = {
         "map_bounds": bounds,
         "geofence_km": geofence_km,
-        "standdown_seconds": getattr(settings, "SAFEHER_STANDDOWN_SECONDS", 60),
+        "standdown_seconds": getattr(settings, "WFS_STANDDOWN_SECONDS", 60),
     }
     return render(request, "hotspots/map.html", context)
 
@@ -43,7 +43,7 @@ def report_hotspot(request):
     Rate limited to prevent false report flooding.
     """
     # Rate limit check (3 reports per hour)
-    limit, window = getattr(settings, "SAFEHER_REPORT_RATE_LIMIT", (3, 3600))
+    limit, window = getattr(settings, "WFS_REPORT_RATE_LIMIT", (3, 3600))
     if is_rate_limited(f"report:{request.user.id}", limit=limit, window_seconds=window):
         messages.error(request, "You have reached the reporting limit for this hour. Please try again later.")
         return redirect("hotspots:map")
@@ -120,7 +120,7 @@ def api_check_geofence(request):
     except (TypeError, ValueError):
         return JsonResponse({"status": "error", "message": "Invalid coordinates"}, status=400)
 
-    geofence_km = getattr(settings, "SAFEHER_GEOFENCE_RADIUS_KM", 0.6)
+    geofence_km = getattr(settings, "WFS_GEOFENCE_RADIUS_KM", 0.6)
     active_hotspots = Hotspot.objects.filter(active=True)
 
     nearest_danger = None
@@ -139,7 +139,7 @@ def api_check_geofence(request):
             "approaching_danger": True,
             "distance_meters": dist_m,
             "vibrate": True,
-            "standdown_window_seconds": getattr(settings, "SAFEHER_STANDDOWN_SECONDS", 60),
+            "standdown_window_seconds": getattr(settings, "WFS_STANDDOWN_SECONDS", 60),
             "hotspot": {
                 "id": nearest_danger.id,
                 "title": nearest_danger.title,

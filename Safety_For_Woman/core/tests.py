@@ -8,7 +8,7 @@ from emergency.models import PanicAlert, ContactNotificationLog
 from emergency.services import dispatch_emergency
 
 
-class SafeHerSystemTestCase(TestCase):
+class WomanForSafetySystemTestCase(TestCase):
     def setUp(self):
         self.client = Client()
         # Create test user

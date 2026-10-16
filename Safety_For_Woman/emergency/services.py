@@ -5,12 +5,12 @@ from .models import PanicAlert, ContactNotificationLog
 from accounts.models import EmergencyContact
 from facilities.models import Facility
 
-logger = logging.getLogger("safeher.security")
+logger = logging.getLogger("wfs.security")
 
 
 def dispatch_emergency(panic_alert: PanicAlert):
     """
-    Executes the SafeHer Next-of-Kin panic escalation pipeline (SRS v1.2, FR-PANIC-1).
+    Executes the Woman For Safety Next-of-Kin panic escalation pipeline (SRS v1.2, FR-PANIC-1).
     
     CRITICAL SAFETY CONSTRAINT:
     In compliance with SRS v1.2 §2.8:
@@ -43,15 +43,15 @@ def dispatch_emergency(panic_alert: PanicAlert):
 
     # Message explicitly states alert is sent to Next of Kin only, prompting manual emergency call if safe
     sms_body = (
-        f"🚨 EMERGENCY ALERT: SafeHer Next-of-Kin Notification\n"
+        f"🚨 EMERGENCY ALERT: Woman For Safety Next-of-Kin Notification\n"
         f"User: {user_name} ({phone})\n"
         f"Trigger: {panic_alert.get_trigger_source_display()}\n"
         f"LIVE GPS LOCATION: {gmaps_url}\n"
         f"Nearest Safe Haven: {nearest_police_info}\n"
-        f"Note: SafeHer does NOT automatically dispatch police. If needed, please contact SAPS on 10111 immediately."
+        f"Note: Woman For Safety does NOT automatically dispatch police. If needed, please contact SAPS on 10111 immediately."
     )
 
-    is_demo = getattr(settings, "SAFEHER_DEMO_MODE", True)
+    is_demo = getattr(settings, "WFS_DEMO_MODE", True)
     contacts = EmergencyContact.objects.filter(user=user, notify_on_panic=True).order_by("priority")
 
     # Honest failure reporting: Surface to audit log if 0 contacts exist
@@ -93,7 +93,7 @@ def dispatch_emergency(panic_alert: PanicAlert):
                 message_body=f"🚨 [WhatsApp Backup] {sms_body}",
             )
 
-            logger.info(f"[SafeHer NOK Dispatch] Alerted {contact.name} ({contact.phone_number}) via {channel}")
+            logger.info(f"[WFS NOK Dispatch] Alerted {contact.name} ({contact.phone_number}) via {channel}")
 
     # Mark alert as escalated to Next of Kin
     panic_alert.status = PanicAlert.STATUS_ACTIVE

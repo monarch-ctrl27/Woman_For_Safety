@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Operations Dashboard — SafeHer{% endblock %}
+{% block title %}Operations Dashboard — Woman For Safety{% endblock %}
 
 {% block content %}
 <!-- a. Header -->
 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
   <div>
     <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.35rem; flex-wrap:wrap;">
-      <span class="badge badge-police">SafeHer Operations Platform</span>
+      <span class="badge badge-police">Woman For Safety Operations Platform</span>
       {% if user.is_superuser %}
         <span class="badge badge-danger">System Administrator</span>
       {% elif user.profile.role == 'moderator' %}
@@ -22,7 +22,7 @@
       {% endif %}
     </div>
     <h1 style="font-size:1.85rem; font-weight:800; color:var(--dark); margin:0;">
-      SafeHer Operations Dashboard
+      Woman For Safety Operations Dashboard
     </h1>
     <p style="color:#64748b; font-size:0.95rem; margin:0.25rem 0 0;">
       Welcome, <strong>{{ user.first_name|default:user.username }}</strong> &bull; Incident Triage, Hazard Moderation &amp; Simulation Oversight
@@ -41,7 +41,7 @@
 
 <!-- SRS v1.2 Mandatory Escalation Architecture Notice -->
 <div style="background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid var(--police-blue); border-radius:0.5rem; padding:0.85rem 1.15rem; margin-bottom:1.5rem; font-size:0.85rem; color:#1e40af; line-height:1.5;">
-  <strong>Mandatory Operational Architecture (SRS v1.2 §2.8):</strong> SafeHer escalates emergency alerts <strong>exclusively to the user's verified Next-of-Kin contacts</strong>. No automatic police dispatch is claimed or executed. This operations dashboard is for admins, moderators, and institutional partners — end-user panic triggers are simulated via pipeline review.
+  <strong>Mandatory Operational Architecture (SRS v1.2 §2.8):</strong> Woman For Safety escalates emergency alerts <strong>exclusively to the user's verified Next-of-Kin contacts</strong>. No automatic police dispatch is claimed or executed. This operations dashboard is for admins, moderators, and institutional partners — end-user panic triggers are simulated via pipeline review.
 </div>
 
 <!-- b. Stats Row (grid-4) -->
@@ -182,7 +182,7 @@
 <!-- e. Card: Quick Navigation -->
 <div class="card" style="margin-bottom:1.5rem;">
   <h3 class="card-title" style="margin-bottom:0.25rem;">Quick Navigation</h3>
-  <p class="card-subtitle" style="margin-bottom:1.15rem;">Access SafeHer operations hub and moderation tools.</p>
+  <p class="card-subtitle" style="margin-bottom:1.15rem;">Access Woman For Safety operations hub and moderation tools.</p>
 
   <div class="grid-3" style="gap:0.85rem;">
     <a href="{% url 'hotspots:map' %}" class="btn btn-outline" style="justify-content:flex-start; padding:0.85rem 1rem; text-decoration:none;">

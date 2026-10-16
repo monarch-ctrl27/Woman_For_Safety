@@ -28,7 +28,7 @@ def register_view(request):
             profile.save()
 
             login(request, user)
-            messages.success(request, f"Welcome to SafeHer, {user.first_name or user.username}! Please add your trusted emergency contacts.")
+            messages.success(request, f"Welcome to Woman For Safety, {user.first_name or user.username}! Please add your trusted emergency contacts.")
             return redirect("accounts:contacts")
     else:
         form = UserRegisterForm()
@@ -47,7 +47,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            messages.success(request, f"Welcome back, {user.first_name or user.username}. SafeHer hands-free triggers are armed.")
+            messages.success(request, f"Welcome back, {user.first_name or user.username}. Woman For Safety hands-free triggers are armed.")
             next_url = request.GET.get("next") or "core:dashboard"
             return redirect(next_url)
         else:
